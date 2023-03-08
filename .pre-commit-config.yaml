@@ -1,0 +1,42 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v2.1.1
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+        args: []
+  - repo: local
+    hooks:
+      - id: go-fmt
+        name: execute go fmt
+        entry: scripts/go-fmt.sh
+        language: golang
+        stages: ['commit']
+
+      - id: go-mod-tidy
+        name: execute go mod tidy
+        entry: scripts/go-mod-tidy.sh
+        language: golang
+        stages: [ 'commit' ]
+
+      - id: go-vet
+        name: execute go vet
+        entry: scripts/go-vet.sh
+        language: golang
+        files: '\.go$'
+        stages: ['commit']
+
+      - id: go-test
+        name: execute go test
+        entry: scripts/go-test.sh
+        language: golang
+        files: '\.go$'
+        stages: ['commit']
