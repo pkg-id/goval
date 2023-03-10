@@ -1,7 +1,12 @@
 # Goval
+
 Goval is a powerful and easy-to-use library that provides a set of functions for validating
 various types of data in Go programming language.
 This library is designed to simplify the process of data validation and reduce the likelihood of errors and vulnerabilities in applications.
+
+## Design
+
+The Engineering Design behind this package can be accessed in `DESIGN.md`.
 
 ## Features
 
