@@ -1,6 +1,9 @@
 package goval
 
-import "context"
+import (
+	"context"
+	"regexp"
+)
 
 // StringValidator is a validator for string type.
 type StringValidator func(ctx context.Context, value string) error
@@ -41,6 +44,15 @@ func (sv StringValidator) Max(length int) StringValidator {
 	return Chain(sv, func(ctx context.Context, value string) error {
 		if len(value) > length {
 			return Errorf("length must be less than %d characters", length)
+		}
+		return nil
+	})
+}
+
+func (sv StringValidator) Match(pattern *regexp.Regexp) StringValidator {
+	return Chain(sv, func(ctx context.Context, value string) error {
+		if !pattern.MatchString(value) {
+			return Errorf("value is not match with pattern: %s", pattern.String())
 		}
 		return nil
 	})

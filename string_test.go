@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/pkg-id/goval"
+	"github.com/pkg-id/goval/govalregex"
 	"testing"
 )
 
@@ -322,5 +323,17 @@ func TestString(t *testing.T) {
 	err = rules.Build("abc").Validate(context.Background())
 	if err != nil {
 		t.Errorf("expect no error since no rule is violated. but got error: %v", err)
+	}
+}
+
+func TestStringValidator_Match(t *testing.T) {
+	err := goval.String().Match(govalregex.AlphaNumeric).Build("#").Validate(context.Background())
+	if err == nil {
+		t.Errorf("expect got an error: %v", err)
+	}
+
+	err = goval.String().Match(govalregex.AlphaNumeric).Build("abc123").Validate(context.Background())
+	if err != nil {
+		t.Errorf("expect no error")
 	}
 }
