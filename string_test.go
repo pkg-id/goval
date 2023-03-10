@@ -26,7 +26,7 @@ func TestStringValidator_Required(t *testing.T) {
 	})
 
 	t.Run("named", func(t *testing.T) {
-		err := goval.Named("name", goval.String().Required().Build("")).Validate(context.Background())
+		err := goval.Named[string]("name", "", goval.String().Required()).Validate(context.Background())
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -40,12 +40,12 @@ func TestStringValidator_Required(t *testing.T) {
 			t.Errorf("expect key of KeyError is name, but got %v", expErr.Key)
 		}
 
-		err = goval.Named("name", goval.String().Required().Build("   ")).Validate(context.Background())
+		err = goval.Named[string]("name", "   ", goval.String().Required()).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
 
-		err = goval.Named("name", goval.String().Required().Build("a")).Validate(context.Background())
+		err = goval.Named[string]("name", "a", goval.String().Required()).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
@@ -74,7 +74,7 @@ func TestStringValidator_Required(t *testing.T) {
 	})
 
 	t.Run("grouped-and-named", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.Named("name", goval.String().Required().Build("")))
+		err := goval.Execute(context.Background(), goval.Named[string]("name", "", goval.String().Required()))
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -124,7 +124,7 @@ func TestStringValidator_Min(t *testing.T) {
 	})
 
 	t.Run("named", func(t *testing.T) {
-		err := goval.Named("name", goval.String().Min(1).Build("")).Validate(context.Background())
+		err := goval.Named("name", "", goval.String().Min(1)).Validate(context.Background())
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -138,12 +138,12 @@ func TestStringValidator_Min(t *testing.T) {
 			t.Errorf("expect key of KeyError is name, but got %v", expErr.Key)
 		}
 
-		err = goval.Named("name", goval.String().Min(1).Build("   ")).Validate(context.Background())
+		err = goval.Named("name", "    ", goval.String().Min(1)).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
 
-		err = goval.Named("name", goval.String().Min(1).Build("a")).Validate(context.Background())
+		err = goval.Named("name", "a", goval.String().Min(1)).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
@@ -172,7 +172,7 @@ func TestStringValidator_Min(t *testing.T) {
 	})
 
 	t.Run("grouped-and-named", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.Named("name", goval.String().Min(1).Build("")))
+		err := goval.Execute(context.Background(), goval.Named("name", "", goval.String().Min(1)))
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -222,7 +222,7 @@ func TestStringValidator_Max(t *testing.T) {
 	})
 
 	t.Run("named", func(t *testing.T) {
-		err := goval.Named("name", goval.String().Max(1).Build("ab")).Validate(context.Background())
+		err := goval.Named("name", "ab", goval.String().Max(1)).Validate(context.Background())
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -236,12 +236,12 @@ func TestStringValidator_Max(t *testing.T) {
 			t.Errorf("expect key of KeyError is name, but got %v", expErr.Key)
 		}
 
-		err = goval.Named("name", goval.String().Max(5).Build("   ")).Validate(context.Background())
+		err = goval.Named("name", "  ", goval.String().Max(5)).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
 
-		err = goval.Named("name", goval.String().Max(1).Build("a")).Validate(context.Background())
+		err = goval.Named("name", "a", goval.String().Max(1)).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
@@ -270,7 +270,7 @@ func TestStringValidator_Max(t *testing.T) {
 	})
 
 	t.Run("grouped-and-named", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.Named("name", goval.String().Max(1).Build("ab")))
+		err := goval.Execute(context.Background(), goval.Named("name", "ab", goval.String().Max(1)))
 		if err == nil {
 			t.Errorf("expect got an error")
 		}

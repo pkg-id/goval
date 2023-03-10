@@ -173,9 +173,9 @@ func Chain[T any](f, g func(ctx context.Context, value T) error) func(ctx contex
 	}
 }
 
-func Named(name string, validator Validator) Validator {
+func Named[T any, B Builder[T]](name string, value T, builder B) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
-		if err := validator.Validate(ctx); err != nil {
+		if err := builder.Build(value).Validate(ctx); err != nil {
 			return NewKeyError(name, err)
 		}
 		return nil
