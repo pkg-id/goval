@@ -19,8 +19,8 @@ func Number[T NumberConstraint]() NumberValidator[T] {
 	return NopValueValidator[T]
 }
 
-// WithValue attaches the value so the rules chain can consume it as an input that need to be validated.
-func (nv NumberValidator[T]) WithValue(value T) Validator {
+// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+func (nv NumberValidator[T]) Build(value T) Validator {
 	return validatorOf(nv, value)
 }
 

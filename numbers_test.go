@@ -105,7 +105,7 @@ func TestNumberValidator_Max(t *testing.T) {
 func constraintNumberRequiredWhenError[T goval.NumberConstraint](t *testing.T, describe string) {
 	t.Run(describe, func(t *testing.T) {
 		var n T
-		err := goval.Number[T]().Required().WithValue(n).Validate(context.Background())
+		err := goval.Number[T]().Required().Build(n).Validate(context.Background())
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -115,7 +115,7 @@ func constraintNumberRequiredWhenError[T goval.NumberConstraint](t *testing.T, d
 func constraintNumberRequiredWhenOK[T goval.NumberConstraint](t *testing.T, describe string) {
 	t.Run(describe, func(t *testing.T) {
 		var n T = 1
-		err := goval.Number[T]().Required().WithValue(n).Validate(context.Background())
+		err := goval.Number[T]().Required().Build(n).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
@@ -125,7 +125,7 @@ func constraintNumberRequiredWhenOK[T goval.NumberConstraint](t *testing.T, desc
 func constraintNumberMinWhenError[T goval.NumberConstraint](t *testing.T, describe string) {
 	t.Run(describe, func(t *testing.T) {
 		var n T = 9
-		err := goval.Number[T]().Required().Min(10).WithValue(n).Validate(context.Background())
+		err := goval.Number[T]().Required().Min(10).Build(n).Validate(context.Background())
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -135,7 +135,7 @@ func constraintNumberMinWhenError[T goval.NumberConstraint](t *testing.T, descri
 func constraintNumberMinWhenOK[T goval.NumberConstraint](t *testing.T, describe string) {
 	t.Run(describe, func(t *testing.T) {
 		var n T = 10
-		err := goval.Number[T]().Required().Min(10).WithValue(n).Validate(context.Background())
+		err := goval.Number[T]().Required().Min(10).Build(n).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}
@@ -145,7 +145,7 @@ func constraintNumberMinWhenOK[T goval.NumberConstraint](t *testing.T, describe 
 func constraintNumberMaxWhenError[T goval.NumberConstraint](t *testing.T, describe string) {
 	t.Run(describe, func(t *testing.T) {
 		var n T = 11
-		err := goval.Number[T]().Required().Min(1).Max(10).WithValue(n).Validate(context.Background())
+		err := goval.Number[T]().Required().Min(1).Max(10).Build(n).Validate(context.Background())
 		if err == nil {
 			t.Errorf("expect got an error")
 		}
@@ -155,7 +155,7 @@ func constraintNumberMaxWhenError[T goval.NumberConstraint](t *testing.T, descri
 func constraintNumberMaxWhenOK[T goval.NumberConstraint](t *testing.T, describe string) {
 	t.Run(describe, func(t *testing.T) {
 		var n T = 10
-		err := goval.Number[T]().Required().Min(1).Max(10).WithValue(n).Validate(context.Background())
+		err := goval.Number[T]().Required().Min(1).Max(10).Build(n).Validate(context.Background())
 		if err != nil {
 			t.Errorf("expect no error but got %v", err)
 		}

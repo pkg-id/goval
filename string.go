@@ -11,8 +11,8 @@ func String() StringValidator {
 	return NopValueValidator[string]
 }
 
-// WithValue attaches the value so the rules chain can consume it as an input that need to be validated.
-func (sv StringValidator) WithValue(value string) Validator {
+// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+func (sv StringValidator) Build(value string) Validator {
 	return validatorOf(sv, value)
 }
 

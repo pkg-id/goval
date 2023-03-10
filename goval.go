@@ -145,6 +145,14 @@ func NopValueValidator[T any](ctx context.Context, v T) error {
 	return nil
 }
 
+// Builder is an interface that defines the Validator from the ValueValidator.
+// The Builder interface is used to construct the validator that can be used to start the validation process.
+// This Builder acts like a factory for Validator and also as the input supplier for the ValueValidator.
+type Builder[T any] interface {
+	// Build returns a validator that can be used to start the validation process.
+	Build(value T) Validator
+}
+
 // Chain creates a new function that chains the execution of two given functions into a single function.
 // Here's an example: suppose we have two functions:
 //
