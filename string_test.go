@@ -327,12 +327,12 @@ func TestString(t *testing.T) {
 }
 
 func TestStringValidator_Match(t *testing.T) {
-	err := goval.String().Match(govalregex.AlphaNumeric).Build("#").Validate(context.Background())
+	err := goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("#").Validate(context.Background())
 	if err == nil {
 		t.Errorf("expect got an error: %v", err)
 	}
 
-	err = goval.String().Match(govalregex.AlphaNumeric).Build("abc123").Validate(context.Background())
+	err = goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("abc123").Validate(context.Background())
 	if err != nil {
 		t.Errorf("expect no error")
 	}
