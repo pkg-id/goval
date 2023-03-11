@@ -29,7 +29,7 @@ func (nv NumberValidator[T]) Required() NumberValidator[T] {
 	return Chain[T](nv, func(ctx context.Context, value T) error {
 		var zero T
 		if value == zero {
-			return Error("is required")
+			return NewRuleError(NumberRequired, value)
 		}
 		return nil
 	})
@@ -39,7 +39,7 @@ func (nv NumberValidator[T]) Required() NumberValidator[T] {
 func (nv NumberValidator[T]) Min(min T) NumberValidator[T] {
 	return Chain(nv, func(ctx context.Context, value T) error {
 		if value < min {
-			return Errorf("must be greater than %v", min)
+			return NewRuleError(NumberMin, value, min)
 		}
 		return nil
 	})
@@ -49,7 +49,7 @@ func (nv NumberValidator[T]) Min(min T) NumberValidator[T] {
 func (nv NumberValidator[T]) Max(max T) NumberValidator[T] {
 	return Chain(nv, func(ctx context.Context, value T) error {
 		if value > max {
-			return Errorf("must be less than %v", max)
+			return NewRuleError(NumberMax, value, max)
 		}
 		return nil
 	})

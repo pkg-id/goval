@@ -13,7 +13,7 @@ func (f NilValidator[T]) Build(value *T) Validator {
 func (f NilValidator[T]) Required() NilValidator[T] {
 	return Chain(f, func(ctx context.Context, value *T) error {
 		if value == nil {
-			return Error("is required")
+			return NewRuleError(NilRequired, value)
 		}
 		return nil
 	})

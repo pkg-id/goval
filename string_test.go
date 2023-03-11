@@ -5,335 +5,141 @@ import (
 	"errors"
 	"github.com/pkg-id/goval"
 	"github.com/pkg-id/goval/govalregex"
+	"reflect"
 	"testing"
 )
 
+func TestString(t *testing.T) {
+	ctx := context.Background()
+	err := goval.String().Build("").Validate(ctx)
+	if err != nil {
+		t.Errorf("expect no error; got error: %v", err)
+	}
+}
+
 func TestStringValidator_Required(t *testing.T) {
-	t.Run("simple", func(t *testing.T) {
-		err := goval.String().Required().Build("").Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
+	ctx := context.Background()
+	err := goval.String().Required().Build("abc").Validate(ctx)
+	if err != nil {
+		t.Errorf("expect no error; got error: %v", err)
+	}
 
-		err = goval.String().Required().Build("   ").Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
+	err = goval.String().Required().Build("").Validate(ctx)
+	var exp *goval.RuleError
+	if !errors.As(err, &exp) {
+		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+	}
 
-		err = goval.String().Required().Build("a").Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
+	if !goval.IsCodeEqual(exp.Code, goval.StringRequired) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
+	}
 
-	t.Run("named", func(t *testing.T) {
-		err := goval.Named[string]("name", "", goval.String().Required()).Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
+	inp, ok := exp.Input.(string)
+	if !ok {
+		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
+	}
 
-		var expErr *goval.KeyError
-		if !errors.As(err, &expErr) {
-			t.Fatalf("expect KeyError")
-		}
+	if inp != "" {
+		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
+	}
 
-		if expErr.Key != "name" {
-			t.Errorf("expect key of KeyError is name, but got %v", expErr.Key)
-		}
-
-		err = goval.Named[string]("name", "   ", goval.String().Required()).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Named[string]("name", "a", goval.String().Required()).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("grouped", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.String().Required().Build(""))
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.Errors
-		if !errors.As(err, &expErr) {
-			t.Errorf("expect Errors")
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Required().Build("   "))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Required().Build("a"))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("grouped-and-named", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.Named[string]("name", "", goval.String().Required()))
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.Errors
-		if !errors.As(err, &expErr) {
-			t.Fatalf("expect Errors")
-		}
-
-		var keyErr *goval.KeyError
-		if !errors.As(expErr.Errs()[0], &keyErr) {
-			t.Fatalf("expect KeyError")
-		}
-
-		if keyErr.Key != "name" {
-			t.Errorf("expect key of KeyError is name, but got %v", keyErr.Key)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Required().Build("   "))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Required().Build("a"))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
+	if exp.Args != nil {
+		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
+	}
 }
 
 func TestStringValidator_Min(t *testing.T) {
-	t.Run("simple", func(t *testing.T) {
-		err := goval.String().Min(1).Build("").Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
+	ctx := context.Background()
+	err := goval.String().Min(3).Build("abc").Validate(ctx)
+	if err != nil {
+		t.Errorf("expect no error; got error: %v", err)
+	}
 
-		err = goval.String().Min(1).Build("   ").Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
+	err = goval.String().Min(3).Build("ab").Validate(ctx)
+	var exp *goval.RuleError
+	if !errors.As(err, &exp) {
+		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+	}
 
-		err = goval.String().Min(1).Build("a").Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
+	if !goval.IsCodeEqual(exp.Code, goval.StringMin) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMin, exp.Code)
+	}
 
-	t.Run("named", func(t *testing.T) {
-		err := goval.Named("name", "", goval.String().Min(1)).Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
+	inp, ok := exp.Input.(string)
+	if !ok {
+		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
+	}
 
-		var expErr *goval.KeyError
-		if !errors.As(err, &expErr) {
-			t.Fatalf("expect KeyError")
-		}
+	if inp != "ab" {
+		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
+	}
 
-		if expErr.Key != "name" {
-			t.Errorf("expect key of KeyError is name, but got %v", expErr.Key)
-		}
-
-		err = goval.Named("name", "    ", goval.String().Min(1)).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Named("name", "a", goval.String().Min(1)).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("grouped", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.String().Min(1).Build(""))
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.Errors
-		if !errors.As(err, &expErr) {
-			t.Errorf("expect Errors")
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Min(1).Build("   "))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Min(1).Build("a"))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("grouped-and-named", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.Named("name", "", goval.String().Min(1)))
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.Errors
-		if !errors.As(err, &expErr) {
-			t.Fatalf("expect Errors")
-		}
-
-		var keyErr *goval.KeyError
-		if !errors.As(expErr.Errs()[0], &keyErr) {
-			t.Fatalf("expect KeyError")
-		}
-
-		if keyErr.Key != "name" {
-			t.Errorf("expect key of KeyError is name, but got %v", keyErr.Key)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Min(1).Build("   "))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Min(1).Build("a"))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
+	args := []any{3}
+	if !reflect.DeepEqual(exp.Args, args) {
+		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
+	}
 }
 
 func TestStringValidator_Max(t *testing.T) {
-	t.Run("simple", func(t *testing.T) {
-		err := goval.String().Max(1).Build("ab").Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		err = goval.String().Max(5).Build("   ").Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.String().Max(1).Build("a").Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("named", func(t *testing.T) {
-		err := goval.Named("name", "ab", goval.String().Max(1)).Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.KeyError
-		if !errors.As(err, &expErr) {
-			t.Fatalf("expect KeyError")
-		}
-
-		if expErr.Key != "name" {
-			t.Errorf("expect key of KeyError is name, but got %v", expErr.Key)
-		}
-
-		err = goval.Named("name", "  ", goval.String().Max(5)).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Named("name", "a", goval.String().Max(1)).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("grouped", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.String().Max(1).Build("ab"))
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.Errors
-		if !errors.As(err, &expErr) {
-			t.Errorf("expect Errors")
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Max(5).Build("   "))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Max(1).Build("a"))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-
-	t.Run("grouped-and-named", func(t *testing.T) {
-		err := goval.Execute(context.Background(), goval.Named("name", "ab", goval.String().Max(1)))
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-
-		var expErr *goval.Errors
-		if !errors.As(err, &expErr) {
-			t.Fatalf("expect Errors")
-		}
-
-		var keyErr *goval.KeyError
-		if !errors.As(expErr.Errs()[0], &keyErr) {
-			t.Fatalf("expect KeyError")
-		}
-
-		if keyErr.Key != "name" {
-			t.Errorf("expect key of KeyError is name, but got %v", keyErr.Key)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Max(5).Build("   "))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-
-		err = goval.Execute(context.Background(), goval.String().Max(1).Build("a"))
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
-		}
-	})
-}
-
-func TestString(t *testing.T) {
-	rules := goval.String().Required().Min(2).Max(5)
-
-	err := rules.Build("").Validate(context.Background())
-	if err == nil {
-		t.Errorf("expect got an error since the required rules is violeted")
-	}
-
-	err = rules.Build("a").Validate(context.Background())
-	if err == nil {
-		t.Errorf("expect got an error since the min length rules is violeted")
-	}
-
-	err = rules.Build("abc abc").Validate(context.Background())
-	if err == nil {
-		t.Errorf("expect got an error since the max length rules is violeted")
-	}
-
-	err = rules.Build("abc").Validate(context.Background())
+	ctx := context.Background()
+	err := goval.String().Max(3).Build("abc").Validate(ctx)
 	if err != nil {
-		t.Errorf("expect no error since no rule is violated. but got error: %v", err)
+		t.Errorf("expect no error; got error: %v", err)
+	}
+
+	err = goval.String().Max(2).Build("abc").Validate(ctx)
+	var exp *goval.RuleError
+	if !errors.As(err, &exp) {
+		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+	}
+
+	if !goval.IsCodeEqual(exp.Code, goval.StringMax) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMax, exp.Code)
+	}
+
+	inp, ok := exp.Input.(string)
+	if !ok {
+		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
+	}
+
+	if inp != "abc" {
+		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
+	}
+
+	args := []any{2}
+	if !reflect.DeepEqual(exp.Args, args) {
+		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
 }
 
 func TestStringValidator_Match(t *testing.T) {
-	err := goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("#").Validate(context.Background())
-	if err == nil {
-		t.Errorf("expect got an error: %v", err)
+	ctx := context.Background()
+	err := goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("abc123").Validate(ctx)
+	if err != nil {
+		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("abc123").Validate(context.Background())
-	if err != nil {
-		t.Errorf("expect no error")
+	err = goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("abc??").Validate(ctx)
+	var exp *goval.RuleError
+	if !errors.As(err, &exp) {
+		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+	}
+
+	if !goval.IsCodeEqual(exp.Code, goval.StringMatch) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMatch, exp.Code)
+	}
+
+	inp, ok := exp.Input.(string)
+	if !ok {
+		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
+	}
+
+	if inp != "abc??" {
+		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
+	}
+
+	args := []any{govalregex.AlphaNumeric.RegExp().String()}
+	if !reflect.DeepEqual(exp.Args, args) {
+		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
 }

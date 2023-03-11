@@ -6,26 +6,6 @@ import (
 	"fmt"
 )
 
-// Error is a type that represents a simple string message as an error.
-// Unlike the error returned by errors.New, this error does not need to implement json.Marshaler.
-// This is because the string literal itself is already a valid JSON format. This error is created from a string type,
-// which means that it can be initialized as a const and when this error is compared, it will be compared by the
-// string value within it. For example:
-//
-//	const err1 = Error("abc")
-//	const err2 = Error("abc")
-//	const err3 = Error("xyz")
-//	fmt.Println(err1 == err2, err1 == err3) // true false
-type Error string
-
-// Error implements the built-in error interface.
-func (e Error) Error() string { return string(e) }
-
-// Errorf is a helper function for creating an Error with a format.
-func Errorf(format string, args ...any) error {
-	return Error(fmt.Sprintf(format, args...))
-}
-
 type KeyError struct {
 	Key string `json:"key"`
 	Err error  `json:"err"`
@@ -54,10 +34,6 @@ func (k *KeyError) String() string {
 
 func (k *KeyError) MarshalJSON() ([]byte, error) {
 	aux := auxKeyError(*k)
-	if _, ok := k.Err.(json.Marshaler); !ok {
-		aux.Err = Error(k.Err.Error())
-	}
-
 	b, err := json.Marshal(aux)
 	if err != nil {
 		return nil, fmt.Errorf("goval: KeyError.MarshalJSON: %w", err)

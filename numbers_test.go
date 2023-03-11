@@ -2,162 +2,192 @@ package goval_test
 
 import (
 	"context"
+	"errors"
 	"github.com/pkg-id/goval"
+	"reflect"
 	"testing"
 )
 
-func TestNumberValidator_Required(t *testing.T) {
-	t.Run("required_when_error", func(t *testing.T) {
-		constraintNumberRequiredWhenError[int](t, "int")
-		constraintNumberRequiredWhenError[int8](t, "int8")
-		constraintNumberRequiredWhenError[int16](t, "int16")
-		constraintNumberRequiredWhenError[int32](t, "int32")
-		constraintNumberRequiredWhenError[int64](t, "int64")
-		constraintNumberRequiredWhenError[uint](t, "uint")
-		constraintNumberRequiredWhenError[uint8](t, "unit8")
-		constraintNumberRequiredWhenError[uint16](t, "uint16")
-		constraintNumberRequiredWhenError[uint32](t, "uint32")
-		constraintNumberRequiredWhenError[uint64](t, "uint64")
-		constraintNumberRequiredWhenError[float32](t, "float32")
-		constraintNumberRequiredWhenError[float64](t, "float64")
-	})
+func TestNumber(t *testing.T) {
+	t.Run("int", NumberValidatorTestFunc[int](1, 0))
+	t.Run("int8", NumberValidatorTestFunc[int8](1, 0))
+	t.Run("int16", NumberValidatorTestFunc[int16](1, 0))
+	t.Run("int32", NumberValidatorTestFunc[int32](1, 0))
+	t.Run("int64", NumberValidatorTestFunc[int64](1, 0))
 
-	t.Run("required_when_ok", func(t *testing.T) {
-		constraintNumberRequiredWhenOK[int](t, "int")
-		constraintNumberRequiredWhenOK[int8](t, "int8")
-		constraintNumberRequiredWhenOK[int16](t, "int16")
-		constraintNumberRequiredWhenOK[int32](t, "int32")
-		constraintNumberRequiredWhenOK[int64](t, "int64")
-		constraintNumberRequiredWhenOK[uint](t, "uint")
-		constraintNumberRequiredWhenOK[uint8](t, "unit8")
-		constraintNumberRequiredWhenOK[uint16](t, "uint16")
-		constraintNumberRequiredWhenOK[uint32](t, "uint32")
-		constraintNumberRequiredWhenOK[uint64](t, "uint64")
-		constraintNumberRequiredWhenOK[float32](t, "float32")
-		constraintNumberRequiredWhenOK[float64](t, "float64")
-	})
+	t.Run("uint", NumberValidatorTestFunc[uint](1, 0))
+	t.Run("uint8", NumberValidatorTestFunc[uint8](1, 0))
+	t.Run("uint16", NumberValidatorTestFunc[uint16](1, 0))
+	t.Run("uint32", NumberValidatorTestFunc[uint32](1, 0))
+	t.Run("uint64", NumberValidatorTestFunc[uint64](1, 0))
+
+	t.Run("float32", NumberValidatorTestFunc[float32](1.123, 0.0))
+	t.Run("float64", NumberValidatorTestFunc[float64](1.123, 0.0))
+}
+
+func NumberValidatorTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
+	return func(t *testing.T) {
+		ctx := context.Background()
+		err := goval.Number[T]().Build(ok).Validate(ctx)
+		if err != nil {
+			t.Errorf("expect no error; got error: %v", err)
+		}
+
+		err = goval.Number[T]().Build(fail).Validate(ctx)
+		if err != nil {
+			t.Errorf("expect no error; got error: %v", err)
+		}
+	}
+}
+
+func TestNilValidator_Required(t *testing.T) {
+	t.Run("int", NumberValidatorRequiredTestFunc[int](1, 0))
+	t.Run("int8", NumberValidatorRequiredTestFunc[int8](1, 0))
+	t.Run("int16", NumberValidatorRequiredTestFunc[int16](1, 0))
+	t.Run("int32", NumberValidatorRequiredTestFunc[int32](1, 0))
+	t.Run("int64", NumberValidatorRequiredTestFunc[int64](1, 0))
+
+	t.Run("uint", NumberValidatorRequiredTestFunc[uint](1, 0))
+	t.Run("uint8", NumberValidatorRequiredTestFunc[uint8](1, 0))
+	t.Run("uint16", NumberValidatorRequiredTestFunc[uint16](1, 0))
+	t.Run("uint32", NumberValidatorRequiredTestFunc[uint32](1, 0))
+	t.Run("uint64", NumberValidatorRequiredTestFunc[uint64](1, 0))
+
+	t.Run("float32", NumberValidatorRequiredTestFunc[float32](1.123, 0.0))
+	t.Run("float64", NumberValidatorRequiredTestFunc[float64](1.123, 0.0))
+}
+
+func NumberValidatorRequiredTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
+	return func(t *testing.T) {
+		ctx := context.Background()
+		err := goval.Number[T]().Required().Build(ok).Validate(ctx)
+		if err != nil {
+			t.Errorf("expect no error; got error: %v", err)
+		}
+
+		err = goval.Number[T]().Required().Build(fail).Validate(ctx)
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !goval.IsCodeEqual(exp.Code, goval.NumberRequired) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberRequired, exp.Code)
+		}
+
+		inp, ok := exp.Input.(T)
+		if !ok {
+			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
+		}
+
+		if inp != fail {
+			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
+		}
+
+		if exp.Args != nil {
+			t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
+		}
+	}
 }
 
 func TestNumberValidator_Min(t *testing.T) {
-	t.Run("min_when_error", func(t *testing.T) {
-		constraintNumberMinWhenError[int](t, "int")
-		constraintNumberMinWhenError[int8](t, "int8")
-		constraintNumberMinWhenError[int16](t, "int16")
-		constraintNumberMinWhenError[int32](t, "int32")
-		constraintNumberMinWhenError[int64](t, "int64")
-		constraintNumberMinWhenError[uint](t, "uint")
-		constraintNumberMinWhenError[uint8](t, "unit8")
-		constraintNumberMinWhenError[uint16](t, "uint16")
-		constraintNumberMinWhenError[uint32](t, "uint32")
-		constraintNumberMinWhenError[uint64](t, "uint64")
-		constraintNumberMinWhenError[float32](t, "float32")
-		constraintNumberMinWhenError[float64](t, "float64")
-	})
+	t.Run("int", NumberValidatorMinTestFunc[int](3, 0))
+	t.Run("int8", NumberValidatorMinTestFunc[int8](3, 0))
+	t.Run("int16", NumberValidatorMinTestFunc[int16](3, 0))
+	t.Run("int32", NumberValidatorMinTestFunc[int32](3, 0))
+	t.Run("int64", NumberValidatorMinTestFunc[int64](3, 0))
 
-	t.Run("min_when_ok", func(t *testing.T) {
-		constraintNumberMinWhenOK[int](t, "int")
-		constraintNumberMinWhenOK[int8](t, "int8")
-		constraintNumberMinWhenOK[int16](t, "int16")
-		constraintNumberMinWhenOK[int32](t, "int32")
-		constraintNumberMinWhenOK[int64](t, "int64")
-		constraintNumberMinWhenOK[uint](t, "uint")
-		constraintNumberMinWhenOK[uint8](t, "unit8")
-		constraintNumberMinWhenOK[uint16](t, "uint16")
-		constraintNumberMinWhenOK[uint32](t, "uint32")
-		constraintNumberMinWhenOK[uint64](t, "uint64")
-		constraintNumberMinWhenOK[float32](t, "float32")
-		constraintNumberMinWhenOK[float64](t, "float64")
-	})
+	t.Run("uint", NumberValidatorMinTestFunc[uint](3, 0))
+	t.Run("uint8", NumberValidatorMinTestFunc[uint8](3, 0))
+	t.Run("uint16", NumberValidatorMinTestFunc[uint16](3, 0))
+	t.Run("uint32", NumberValidatorMinTestFunc[uint32](3, 0))
+	t.Run("uint64", NumberValidatorMinTestFunc[uint64](3, 0))
+
+	t.Run("float32", NumberValidatorMinTestFunc[float32](3.123, 0.0))
+	t.Run("float64", NumberValidatorMinTestFunc[float64](3.123, 0.0))
+}
+
+func NumberValidatorMinTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
+	return func(t *testing.T) {
+		ctx := context.Background()
+		err := goval.Number[T]().Min(3).Build(ok).Validate(ctx)
+		if err != nil {
+			t.Errorf("expect no error; got error: %v", err)
+		}
+
+		err = goval.Number[T]().Min(3).Build(fail).Validate(ctx)
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !goval.IsCodeEqual(exp.Code, goval.NumberMin) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMin, exp.Code)
+		}
+
+		inp, ok := exp.Input.(T)
+		if !ok {
+			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
+		}
+
+		if inp != fail {
+			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
+		}
+
+		args := []any{T(3)}
+		if !reflect.DeepEqual(exp.Args, args) {
+			t.Errorf("expect the error args: %v, type: %T; got error args: %v, type: %T", args, args, exp.Args, exp.Args)
+		}
+	}
 }
 
 func TestNumberValidator_Max(t *testing.T) {
-	t.Run("max_when_error", func(t *testing.T) {
-		constraintNumberMaxWhenError[int](t, "int")
-		constraintNumberMaxWhenError[int8](t, "int8")
-		constraintNumberMaxWhenError[int16](t, "int16")
-		constraintNumberMaxWhenError[int32](t, "int32")
-		constraintNumberMaxWhenError[int64](t, "int64")
-		constraintNumberMaxWhenError[uint](t, "uint")
-		constraintNumberMaxWhenError[uint8](t, "unit8")
-		constraintNumberMaxWhenError[uint16](t, "uint16")
-		constraintNumberMaxWhenError[uint32](t, "uint32")
-		constraintNumberMaxWhenError[uint64](t, "uint64")
-		constraintNumberMaxWhenError[float32](t, "float32")
-		constraintNumberMaxWhenError[float64](t, "float64")
-	})
+	t.Run("int", NumberValidatorMaxTestFunc[int](3, 5))
+	t.Run("int8", NumberValidatorMaxTestFunc[int8](3, 5))
+	t.Run("int16", NumberValidatorMaxTestFunc[int16](3, 5))
+	t.Run("int32", NumberValidatorMaxTestFunc[int32](3, 5))
+	t.Run("int64", NumberValidatorMaxTestFunc[int64](3, 5))
 
-	t.Run("max_when_ok", func(t *testing.T) {
-		constraintNumberMaxWhenOK[int](t, "int")
-		constraintNumberMaxWhenOK[int8](t, "int8")
-		constraintNumberMaxWhenOK[int16](t, "int16")
-		constraintNumberMaxWhenOK[int32](t, "int32")
-		constraintNumberMaxWhenOK[int64](t, "int64")
-		constraintNumberMaxWhenOK[uint](t, "uint")
-		constraintNumberMaxWhenOK[uint8](t, "unit8")
-		constraintNumberMaxWhenOK[uint16](t, "uint16")
-		constraintNumberMaxWhenOK[uint32](t, "uint32")
-		constraintNumberMaxWhenOK[uint64](t, "uint64")
-		constraintNumberMaxWhenOK[float32](t, "float32")
-		constraintNumberMaxWhenOK[float64](t, "float64")
-	})
+	t.Run("uint", NumberValidatorMaxTestFunc[uint](3, 5))
+	t.Run("uint8", NumberValidatorMaxTestFunc[uint8](3, 5))
+	t.Run("uint16", NumberValidatorMaxTestFunc[uint16](3, 5))
+	t.Run("uint32", NumberValidatorMaxTestFunc[uint32](3, 5))
+	t.Run("uint64", NumberValidatorMaxTestFunc[uint64](3, 5))
+
+	t.Run("float32", NumberValidatorMaxTestFunc[float32](3.0, 3.1))
+	t.Run("float64", NumberValidatorMaxTestFunc[float64](3.0, 3.1))
 }
 
-func constraintNumberRequiredWhenError[T goval.NumberConstraint](t *testing.T, describe string) {
-	t.Run(describe, func(t *testing.T) {
-		var n T
-		err := goval.Number[T]().Required().Build(n).Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
-		}
-	})
-}
-
-func constraintNumberRequiredWhenOK[T goval.NumberConstraint](t *testing.T, describe string) {
-	t.Run(describe, func(t *testing.T) {
-		var n T = 1
-		err := goval.Number[T]().Required().Build(n).Validate(context.Background())
+func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
+	return func(t *testing.T) {
+		ctx := context.Background()
+		err := goval.Number[T]().Max(3).Build(ok).Validate(ctx)
 		if err != nil {
-			t.Errorf("expect no error but got %v", err)
+			t.Errorf("expect no error; got error: %v", err)
 		}
-	})
-}
 
-func constraintNumberMinWhenError[T goval.NumberConstraint](t *testing.T, describe string) {
-	t.Run(describe, func(t *testing.T) {
-		var n T = 9
-		err := goval.Number[T]().Required().Min(10).Build(n).Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
+		err = goval.Number[T]().Max(3).Build(fail).Validate(ctx)
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
-	})
-}
 
-func constraintNumberMinWhenOK[T goval.NumberConstraint](t *testing.T, describe string) {
-	t.Run(describe, func(t *testing.T) {
-		var n T = 10
-		err := goval.Number[T]().Required().Min(10).Build(n).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
+		if !goval.IsCodeEqual(exp.Code, goval.NumberMax) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMax, exp.Code)
 		}
-	})
-}
 
-func constraintNumberMaxWhenError[T goval.NumberConstraint](t *testing.T, describe string) {
-	t.Run(describe, func(t *testing.T) {
-		var n T = 11
-		err := goval.Number[T]().Required().Min(1).Max(10).Build(n).Validate(context.Background())
-		if err == nil {
-			t.Errorf("expect got an error")
+		inp, ok := exp.Input.(T)
+		if !ok {
+			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
 		}
-	})
-}
 
-func constraintNumberMaxWhenOK[T goval.NumberConstraint](t *testing.T, describe string) {
-	t.Run(describe, func(t *testing.T) {
-		var n T = 10
-		err := goval.Number[T]().Required().Min(1).Max(10).Build(n).Validate(context.Background())
-		if err != nil {
-			t.Errorf("expect no error but got %v", err)
+		if inp != fail {
+			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
 		}
-	})
+
+		args := []any{T(3)}
+		if !reflect.DeepEqual(exp.Args, args) {
+			t.Errorf("expect the error args: %v, type: %T; got error args: %v, type: %T", args, args, exp.Args, exp.Args)
+		}
+	}
 }

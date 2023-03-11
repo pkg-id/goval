@@ -23,7 +23,7 @@ func (sv StringValidator) Build(value string) Validator {
 func (sv StringValidator) Required() StringValidator {
 	return Chain(sv, func(ctx context.Context, value string) error {
 		if value == "" {
-			return Error("is required")
+			return NewRuleError(StringRequired, value)
 		}
 		return nil
 	})
@@ -33,7 +33,7 @@ func (sv StringValidator) Required() StringValidator {
 func (sv StringValidator) Min(length int) StringValidator {
 	return Chain(sv, func(ctx context.Context, value string) error {
 		if len(value) < length {
-			return Errorf("length must be at least %d characters", length)
+			return NewRuleError(StringMin, value, length)
 		}
 		return nil
 	})
@@ -43,7 +43,7 @@ func (sv StringValidator) Min(length int) StringValidator {
 func (sv StringValidator) Max(length int) StringValidator {
 	return Chain(sv, func(ctx context.Context, value string) error {
 		if len(value) > length {
-			return Errorf("length must be less than %d characters", length)
+			return NewRuleError(StringMax, value, length)
 		}
 		return nil
 	})
@@ -52,7 +52,7 @@ func (sv StringValidator) Max(length int) StringValidator {
 func (sv StringValidator) Match(pattern *regexp.Regexp) StringValidator {
 	return Chain(sv, func(ctx context.Context, value string) error {
 		if !pattern.MatchString(value) {
-			return Errorf("value is not match with pattern: %s", pattern.String())
+			return NewRuleError(StringMatch, value, pattern.String())
 		}
 		return nil
 	})
