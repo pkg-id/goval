@@ -5,7 +5,7 @@ import "context"
 type MapValidator[K comparable, V any] FunctionValidator[map[K]V]
 
 func Map[K comparable, V any]() MapValidator[K, V] {
-	return NopValueValidator[map[K]V]
+	return NopFunctionValidator[map[K]V]()
 }
 
 // Build attaches the value so the rules chain can consume it as an input that need to be validated.

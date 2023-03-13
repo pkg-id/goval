@@ -11,7 +11,7 @@ type StringValidator FunctionValidator[string]
 // String is StringValidator constructor. This function is used to initialize
 // the rules chain. Since, it will be a first rule in the chain, it not validates anything.
 func String() StringValidator {
-	return NopValueValidator[string]
+	return NopFunctionValidator[string]()
 }
 
 // Build attaches the value so the rules chain can consume it as an input that need to be validated.

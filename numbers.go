@@ -16,7 +16,7 @@ type NumberValidator[T NumberConstraint] FunctionValidator[T]
 // Number is NumberValidator constructor. This function is used to initialize
 // the rules chain. Since, it will be a first rule in the chain, it not validates anything.
 func Number[T NumberConstraint]() NumberValidator[T] {
-	return NopValueValidator[T]
+	return NopFunctionValidator[T]()
 }
 
 // Build attaches the value so the rules chain can consume it as an input that need to be validated.

@@ -4,7 +4,7 @@ import "context"
 
 type PtrValidator[T any] FunctionValidator[*T]
 
-func Ptr[T any]() PtrValidator[T] { return NopValueValidator[*T] }
+func Ptr[T any]() PtrValidator[T] { return NopFunctionValidator[*T]() }
 
 func (f PtrValidator[T]) Build(value *T) Validator {
 	return validatorOf(f, value)

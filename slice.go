@@ -5,7 +5,7 @@ import "context"
 type SliceValidator[T any, V []T] FunctionValidator[V]
 
 func Slice[T any, V []T]() SliceValidator[T, V] {
-	return NopValueValidator[V]
+	return NopFunctionValidator[V]()
 }
 
 // Build attaches the value so the rules chain can consume it as an input that need to be validated.
