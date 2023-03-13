@@ -13,9 +13,13 @@ func (sv SliceValidator[T, V]) Build(values V) Validator {
 	return validatorOf(sv, values)
 }
 
+func (sv SliceValidator[T, V]) With(next SliceValidator[T, V]) SliceValidator[T, V] {
+	return Chain(sv, next)
+}
+
 // Required ensures the number is not a zero value.
 func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
-	return Chain(sv, func(ctx context.Context, values V) error {
+	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) == 0 {
 			return NewRuleError(SliceRequired, values)
 		}
@@ -25,7 +29,7 @@ func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 
 // Min ensures the number is not less than the given min.
 func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
-	return Chain(sv, func(ctx context.Context, values V) error {
+	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) < min {
 			return NewRuleError(SliceMin, values, min)
 		}
@@ -35,7 +39,7 @@ func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
 
 // Max ensures the number is not greater than the given max.
 func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
-	return Chain(sv, func(ctx context.Context, values V) error {
+	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) > max {
 			return NewRuleError(SliceMax, values, max)
 		}

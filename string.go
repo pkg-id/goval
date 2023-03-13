@@ -19,9 +19,13 @@ func (sv StringValidator) Build(value string) Validator {
 	return validatorOf(sv, value)
 }
 
+func (sv StringValidator) With(next StringValidator) StringValidator {
+	return Chain(sv, next)
+}
+
 // Required ensures the string is not an empty string.
 func (sv StringValidator) Required() StringValidator {
-	return Chain(sv, func(ctx context.Context, value string) error {
+	return sv.With(func(ctx context.Context, value string) error {
 		if value == "" {
 			return NewRuleError(StringRequired, value)
 		}
@@ -31,7 +35,7 @@ func (sv StringValidator) Required() StringValidator {
 
 // Min ensures the length of the string is not less than the given length.
 func (sv StringValidator) Min(length int) StringValidator {
-	return Chain(sv, func(ctx context.Context, value string) error {
+	return sv.With(func(ctx context.Context, value string) error {
 		if len(value) < length {
 			return NewRuleError(StringMin, value, length)
 		}
@@ -41,7 +45,7 @@ func (sv StringValidator) Min(length int) StringValidator {
 
 // Max ensures the length of the string is not greater than the given length.
 func (sv StringValidator) Max(length int) StringValidator {
-	return Chain(sv, func(ctx context.Context, value string) error {
+	return sv.With(func(ctx context.Context, value string) error {
 		if len(value) > length {
 			return NewRuleError(StringMax, value, length)
 		}
@@ -50,7 +54,7 @@ func (sv StringValidator) Max(length int) StringValidator {
 }
 
 func (sv StringValidator) Match(pattern *regexp.Regexp) StringValidator {
-	return Chain(sv, func(ctx context.Context, value string) error {
+	return sv.With(func(ctx context.Context, value string) error {
 		if !pattern.MatchString(value) {
 			return NewRuleError(StringMatch, value, pattern.String())
 		}
