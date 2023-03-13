@@ -16,7 +16,7 @@ func (sv SliceValidator[T, V]) Build(values V) Validator {
 // Required ensures the number is not a zero value.
 func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 	return Chain(sv, func(ctx context.Context, values V) error {
-		if values == nil || len(values) == 0 {
+		if len(values) == 0 {
 			return NewRuleError(SliceRequired, values)
 		}
 		return nil
