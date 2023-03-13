@@ -2,7 +2,7 @@ package goval
 
 import "context"
 
-type SliceValidator[T any, V []T] func(ctx context.Context, values V) error
+type SliceValidator[T any, V []T] FunctionValidator[V]
 
 func Slice[T any, V []T]() SliceValidator[T, V] {
 	return NopValueValidator[V]

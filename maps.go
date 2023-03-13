@@ -2,7 +2,7 @@ package goval
 
 import "context"
 
-type MapValidator[K comparable, V any] func(ctx context.Context, values map[K]V) error
+type MapValidator[K comparable, V any] FunctionValidator[map[K]V]
 
 func Map[K comparable, V any]() MapValidator[K, V] {
 	return NopValueValidator[map[K]V]

@@ -2,7 +2,7 @@ package goval
 
 import "context"
 
-type NilValidator[T any] func(ctx context.Context, value *T) error
+type NilValidator[T any] FunctionValidator[*T]
 
 func Nil[T any]() NilValidator[T] { return NopValueValidator[*T] }
 

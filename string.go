@@ -6,7 +6,7 @@ import (
 )
 
 // StringValidator is a validator for string type.
-type StringValidator func(ctx context.Context, value string) error
+type StringValidator FunctionValidator[string]
 
 // String is StringValidator constructor. This function is used to initialize
 // the rules chain. Since, it will be a first rule in the chain, it not validates anything.

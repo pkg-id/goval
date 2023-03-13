@@ -11,7 +11,7 @@ type NumberConstraint interface {
 }
 
 // NumberValidator is a validator for NumberConstraint type.
-type NumberValidator[T NumberConstraint] func(ctx context.Context, value T) error
+type NumberValidator[T NumberConstraint] FunctionValidator[T]
 
 // Number is NumberValidator constructor. This function is used to initialize
 // the rules chain. Since, it will be a first rule in the chain, it not validates anything.

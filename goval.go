@@ -117,9 +117,7 @@ func validatorOf[T any](fn func(ctx context.Context, value T) error, value T) Va
 }
 
 // NopValueValidator does nothing and always returns nil. It's meant to be used as the first validator in a chain.
-func NopValueValidator[T any](ctx context.Context, v T) error {
-	return nil
-}
+func NopValueValidator[T any](context.Context, T) error { return nil }
 
 // Builder is an interface that defines the Validator from the ValueValidator.
 // The Builder interface is used to construct the validator that can be used to start the validation process.
@@ -128,6 +126,8 @@ type Builder[T any] interface {
 	// Build returns a validator that can be used to start the validation process.
 	Build(value T) Validator
 }
+
+type FunctionValidator[T any] func(ctx context.Context, value T) error
 
 // Chain creates a new function that chains the execution of two given functions into a single function.
 // Here's an example: suppose we have two functions:
