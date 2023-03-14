@@ -2,7 +2,6 @@ package goval
 
 import (
 	"context"
-	"regexp"
 )
 
 // StringValidator is a validator for string type.
@@ -53,10 +52,11 @@ func (sv StringValidator) Max(length int) StringValidator {
 	})
 }
 
-func (sv StringValidator) Match(pattern *regexp.Regexp) StringValidator {
+func (sv StringValidator) Match(pattern Pattern) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
-		if !pattern.MatchString(value) {
-			return NewRuleError(StringMatch, value, pattern.String())
+		exp := pattern.RegExp()
+		if !exp.MatchString(value) {
+			return NewRuleError(StringMatch, value, exp.String())
 		}
 		return nil
 	})

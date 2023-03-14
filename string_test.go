@@ -114,12 +114,12 @@ func TestStringValidator_Max(t *testing.T) {
 
 func TestStringValidator_Match(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("abc123").Validate(ctx)
+	err := goval.String().Match(govalregex.AlphaNumeric).Build("abc123").Validate(ctx)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().Match(govalregex.AlphaNumeric.RegExp()).Build("abc??").Validate(ctx)
+	err = goval.String().Match(govalregex.AlphaNumeric).Build("abc??").Validate(ctx)
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"regexp"
 )
 
 type KeyError struct {
@@ -169,4 +170,8 @@ func Execute(ctx context.Context, validators ...Validator) error {
 		}
 	}
 	return errs.Err()
+}
+
+type Pattern interface {
+	RegExp() *regexp.Regexp
 }
