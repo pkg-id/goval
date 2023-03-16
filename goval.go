@@ -130,6 +130,10 @@ type Builder[T any] interface {
 	Build(value T) Validator
 }
 
+type BuilderFunc[T any] func(value T) Validator
+
+func (f BuilderFunc[T]) Build(value T) Validator { return f(value) }
+
 type FunctionValidator[T any] func(ctx context.Context, value T) error
 
 // Chain creates a new function that chains the execution of two given functions into a single function.
@@ -158,6 +162,18 @@ func Named[T any, B Builder[T]](name string, value T, builder B) Validator {
 			return NewKeyError(name, err)
 		}
 		return nil
+	})
+}
+
+func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
+	return BuilderFunc[V](func(values V) Validator {
+		return ValidatorFunc(func(ctx context.Context) error {
+			errs := NewErrors()
+			for _, each := range values {
+				errs.Append(fn(each).Validate(ctx))
+			}
+			return errs.Err()
+		})
 	})
 }
 

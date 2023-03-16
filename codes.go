@@ -53,7 +53,7 @@ func IsCodeEqual(a, b RuleCode) bool {
 type RuleError struct {
 	Code  RuleCode `json:"code"`
 	Input any      `json:"input"`
-	Args  []any    `json:"args"`
+	Args  []any    `json:"args,omitempty"`
 }
 
 type auxRuleError RuleError
