@@ -95,21 +95,25 @@ func Named[T any, B Builder[T]](name string, value T, builder B) Validator {
 func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
 	return BuilderFunc[V](func(values V) Validator {
 		return ValidatorFunc(func(ctx context.Context) error {
-			errs := make([]error, 0)
-			for _, each := range values {
-				err := fn(each).Validate(ctx)
-				if err != nil {
-					errs = append(errs, err)
-				}
-			}
-
-			if len(errs) != 0 {
-				return NewErrors(errs)
-			}
-
-			return nil
+			return each(ctx, values, fn)
 		})
 	})
+}
+
+func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validator) error {
+	errs := make([]error, 0)
+	for _, value := range values {
+		err := fn(value).Validate(ctx)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) != 0 {
+		return NewErrors(errs)
+	}
+
+	return nil
 }
 
 // Execute executes the given validators and collects the errors into a single error
