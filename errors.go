@@ -14,7 +14,7 @@ func NewRuleError(code RuleCode, input any, args ...any) *RuleError {
 	}
 }
 
-type auxRuleError *RuleError
+type auxRuleError RuleError
 
 type RuleError struct {
 	Code  RuleCode `json:"code"`
@@ -24,7 +24,7 @@ type RuleError struct {
 
 func (r *RuleError) Error() string                { return r.String() }
 func (r *RuleError) String() string               { return stringifyJSON(r) }
-func (r *RuleError) MarshalJSON() ([]byte, error) { return json.Marshal(auxRuleError(r)) }
+func (r *RuleError) MarshalJSON() ([]byte, error) { return json.Marshal(auxRuleError(*r)) }
 
 type RuleErrors struct {
 	Code RuleCode
@@ -79,7 +79,7 @@ type KeyError struct {
 	Err error  `json:"err"`
 }
 
-type auxKeyError *KeyError
+type auxKeyError KeyError
 
 func NewKeyError(key string, err error) *KeyError {
 	return &KeyError{
@@ -92,7 +92,7 @@ func (k *KeyError) Error() string  { return k.String() }
 func (k *KeyError) String() string { return stringifyJSON(k) }
 
 func (k *KeyError) MarshalJSON() ([]byte, error) {
-	aux := auxKeyError(k)
+	aux := auxKeyError(*k)
 	if _, ok := k.Err.(json.Marshaler); !ok {
 		k.Err = TextError(k.Err.Error())
 	}

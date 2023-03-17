@@ -36,6 +36,10 @@ type Order struct {
 	Coupon   *string   `json:"coupon,omitempty"`
 }
 
+func init() {
+	goval.SetErrorTranslator(&customTranslator{})
+}
+
 func main() {
 	var order Order
 	order.Products = []Product{{}}
@@ -48,4 +52,18 @@ func main() {
 		goval.Named("products", order.Products, goval.Each[Product](ProductValidator)),
 	)
 	fmt.Println(err)
+}
+
+type customTranslator struct {
+}
+
+func (c *customTranslator) Translate(_ context.Context, err *goval.RuleError) error {
+	switch err.Code {
+	case goval.StringRequired:
+		return goval.TextError("string is required")
+	case goval.NumberRequired:
+		return goval.TextError("number is required")
+	default:
+		return err
+	}
 }

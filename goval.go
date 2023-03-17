@@ -22,8 +22,22 @@ func (f ValidatorFunc) Validate(ctx context.Context) error { return f(ctx) }
 // validatorOf is a helper function that creates a Validator from a value validator function.
 func validatorOf[T any](fn func(ctx context.Context, value T) error, value T) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
-		return fn(ctx, value)
+		err := fn(ctx, value)
+		return translateValidatorError(ctx, err)
 	})
+}
+
+func translateValidatorError(ctx context.Context, err error) error {
+	if err == nil {
+		return nil
+	}
+
+	switch et := err.(type) {
+	default:
+		return err
+	case *RuleError:
+		return globalErrorTranslator.Translate(ctx, et)
+	}
 }
 
 // NopFunctionValidator does nothing and always returns nil. It's meant to be used as the first validator in a chain.
@@ -61,26 +75,17 @@ type FunctionValidatorConstraint[T any] interface {
 // then `g` will be executed next. If `h` returns any error it will be an error that returned either `f` or `g`.
 func Chain[T any, Func FunctionValidatorConstraint[T]](f, g Func) Func {
 	return func(ctx context.Context, value T) error {
-		if err := WithTranslator[T](f)(ctx, value); err != nil {
-			return err
-		}
-		return WithTranslator[T](g)(ctx, value)
+		return execChain(ctx, value, f, g)
 	}
 }
 
-func WithTranslator[T any, Func FunctionValidatorConstraint[T]](f Func) Func {
-	return func(ctx context.Context, value T) error {
-		err := f(ctx, value)
-		if err != nil {
-			switch et := err.(type) {
-			default:
-				return err
-			case *RuleError:
-				return globalErrorTranslator.Translate(ctx, et)
-			}
+func execChain[T any, Func FunctionValidatorConstraint[T]](ctx context.Context, value T, functions ...Func) error {
+	for _, fn := range functions {
+		if err := fn(ctx, value); err != nil {
+			return err
 		}
-		return nil
 	}
+	return nil
 }
 
 func Named[T any, B Builder[T]](name string, value T, builder B) Validator {
