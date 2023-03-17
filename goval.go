@@ -95,24 +95,40 @@ func Named[T any, B Builder[T]](name string, value T, builder B) Validator {
 func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
 	return BuilderFunc[V](func(values V) Validator {
 		return ValidatorFunc(func(ctx context.Context) error {
-			errs := NewErrors()
+			errs := make([]error, 0)
 			for _, each := range values {
-				errs.Append(fn(each).Validate(ctx))
+				err := fn(each).Validate(ctx)
+				if err != nil {
+					errs = append(errs, err)
+				}
 			}
-			return errs.Err()
+
+			if len(errs) != 0 {
+				return NewErrors(errs)
+			}
+
+			return nil
 		})
 	})
 }
 
 // Execute executes the given validators and collects the errors into a single error
 func Execute(ctx context.Context, validators ...Validator) error {
-	errs := NewErrors()
+	errs := make([]error, 0)
 	for _, validator := range validators {
 		if validator != nil {
-			errs.Append(validator.Validate(ctx))
+			err := validator.Validate(ctx)
+			if err != nil {
+				errs = append(errs, err)
+			}
 		}
 	}
-	return errs.Err()
+
+	if len(errs) != 0 {
+		return NewErrors(errs)
+	}
+
+	return nil
 }
 
 type Pattern interface {
