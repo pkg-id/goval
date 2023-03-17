@@ -5,7 +5,43 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"sync"
 )
+
+// TextError is an error type for turning an ordinary string to an error.
+type TextError string
+
+// Error implements the built-in error.
+func (t TextError) Error() string { return t.String() }
+
+// String implements the fmt.Stringer.
+func (t TextError) String() string { return string(t) }
+
+// MarshalJSON implements the json.Marshaler.
+func (t TextError) MarshalJSON() ([]byte, error) { return json.Marshal(t.String()) }
+
+type ErrorTranslator interface {
+	Translate(ctx context.Context, err *RuleError) error
+}
+
+type ErrorTranslatorFunc func(ctx context.Context, err *RuleError) error
+
+func (f ErrorTranslatorFunc) Translate(ctx context.Context, err *RuleError) error { return f(ctx, err) }
+
+type errorTranslatorImpl int
+
+func (t errorTranslatorImpl) Translate(_ context.Context, err *RuleError) error { return err }
+
+const DefaultErrorTranslator = errorTranslatorImpl(1)
+
+var globalErrorTranslator ErrorTranslator = DefaultErrorTranslator
+var globalErrorTranslatorLock sync.RWMutex
+
+func SetErrorTranslator(translator ErrorTranslator) {
+	globalErrorTranslatorLock.Lock()
+	defer globalErrorTranslatorLock.Unlock()
+	globalErrorTranslator = translator
+}
 
 type KeyError struct {
 	Key string `json:"key"`
@@ -21,9 +57,7 @@ func NewKeyError(key string, err error) *KeyError {
 	}
 }
 
-func (k *KeyError) Error() string {
-	return k.String()
-}
+func (k *KeyError) Error() string { return k.String() }
 
 func (k *KeyError) String() string {
 	b, err := k.MarshalJSON()
@@ -35,6 +69,10 @@ func (k *KeyError) String() string {
 
 func (k *KeyError) MarshalJSON() ([]byte, error) {
 	aux := auxKeyError(*k)
+	if _, ok := k.Err.(json.Marshaler); ok {
+		k.Err = TextError(k.Err.Error())
+	}
+
 	b, err := json.Marshal(aux)
 	if err != nil {
 		return nil, fmt.Errorf("goval: KeyError.MarshalJSON: %w", err)
@@ -69,9 +107,7 @@ func (e *Errors) Err() error {
 	return e
 }
 
-func (e *Errors) Errs() []error {
-	return e.errs
-}
+func (e *Errors) Errs() []error { return e.errs }
 
 // Error implements the built-in error interface.
 // This method returns the same value as the String method.
@@ -136,6 +172,10 @@ func (f BuilderFunc[T]) Build(value T) Validator { return f(value) }
 
 type FunctionValidator[T any] func(ctx context.Context, value T) error
 
+type FunctionValidatorConstraint[T any] interface {
+	~func(ctx context.Context, value T) error
+}
+
 // Chain creates a new function that chains the execution of two given functions into a single function.
 // Here's an example: suppose we have two functions:
 //
@@ -146,13 +186,27 @@ type FunctionValidator[T any] func(ctx context.Context, value T) error
 // want to delay the execution of `f` and `g` until the new function is executed.
 // Let's call the new function `h`. When `h` is executed, `f` will be executed first. If `f` executes without error,
 // then `g` will be executed next. If `h` returns any error it will be an error that returned either `f` or `g`.
-func Chain[T any](f, g func(ctx context.Context, value T) error) func(ctx context.Context, value T) error {
+func Chain[T any, Func FunctionValidatorConstraint[T]](f, g Func) Func {
 	return func(ctx context.Context, value T) error {
-		if err := f(ctx, value); err != nil {
+		if err := WithTranslator[T](f)(ctx, value); err != nil {
 			return err
 		}
+		return WithTranslator[T](g)(ctx, value)
+	}
+}
 
-		return g(ctx, value)
+func WithTranslator[T any, Func FunctionValidatorConstraint[T]](f Func) Func {
+	return func(ctx context.Context, value T) error {
+		err := f(ctx, value)
+		if err != nil {
+			switch et := err.(type) {
+			default:
+				return err
+			case *RuleError:
+				return globalErrorTranslator.Translate(ctx, et)
+			}
+		}
+		return nil
 	}
 }
 
