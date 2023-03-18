@@ -20,7 +20,7 @@ func (mv MapValidator[K, V]) With(next MapValidator[K, V]) MapValidator[K, V] {
 // Required ensures the length is not 0 or the map is not nil.
 func (mv MapValidator[K, V]) Required() MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
-		if values == nil || len(values) == 0 {
+		if len(values) == 0 {
 			return NewRuleError(MapRequired, values)
 		}
 
