@@ -8,6 +8,7 @@ const (
 	ruleCodeBaseNumber
 	ruleCodeBaseSlice
 	ruleCodeBaseMap
+	ruleCodeBaseTime
 )
 
 const (
@@ -39,6 +40,12 @@ const (
 	MapMin
 	MapMax
 	MapEach
+)
+
+const (
+	TimeRequired = ruleCodeBaseTime + iota
+	TimeMin
+	TimeMax
 )
 
 func IsCodeEqual(a, b RuleCode) bool {
