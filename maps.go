@@ -2,22 +2,25 @@ package goval
 
 import "context"
 
+// MapValidator is a FunctionValidator that validates map[K]V.
 type MapValidator[K comparable, V any] FunctionValidator[map[K]V]
 
+// Map returns a MapValidator with no rules.
 func Map[K comparable, V any]() MapValidator[K, V] {
 	return NopFunctionValidator[map[K]V]()
 }
 
-// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+// Build builds the validator chain and attaches the value to it.
 func (mv MapValidator[K, V]) Build(values map[K]V) Validator {
 	return validatorOf(mv, values)
 }
 
+// With attaches the next rule to the chain.
 func (mv MapValidator[K, V]) With(next MapValidator[K, V]) MapValidator[K, V] {
 	return Chain(mv, next)
 }
 
-// Required ensures the length is not 0 or the map is not nil.
+// Required ensures the length is not zero.
 func (mv MapValidator[K, V]) Required() MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
 		if len(values) == 0 {
@@ -32,7 +35,7 @@ func (mv MapValidator[K, V]) Required() MapValidator[K, V] {
 func (mv MapValidator[K, V]) Min(min int) MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
 		if len(values) < min {
-			return NewRuleError(MapMin, values)
+			return NewRuleError(MapMin, values, min)
 		}
 		return nil
 	})
@@ -42,17 +45,18 @@ func (mv MapValidator[K, V]) Min(min int) MapValidator[K, V] {
 func (mv MapValidator[K, V]) Max(max int) MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
 		if len(values) > max {
-			return NewRuleError(MapMax, values)
+			return NewRuleError(MapMax, values, max)
 		}
 		return nil
 	})
 }
 
-func (mv MapValidator[K, V]) Each(builder Builder[V]) MapValidator[K, V] {
+// Each ensures each element of the map is satisfied by the given validator.
+func (mv MapValidator[K, V]) Each(validator Builder[V]) MapValidator[K, V] {
 	return func(ctx context.Context, values map[K]V) error {
 		errs := make([]RuleError, 0)
 		for _, value := range values {
-			if err := builder.Build(value).Validate(ctx); err != nil {
+			if err := validator.Build(value).Validate(ctx); err != nil {
 				switch et := err.(type) {
 				default:
 					return err

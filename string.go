@@ -4,25 +4,25 @@ import (
 	"context"
 )
 
-// StringValidator is a validator for string type.
+// StringValidator is a FunctionValidator that validates string.
 type StringValidator FunctionValidator[string]
 
-// String is StringValidator constructor. This function is used to initialize
-// the rules chain. Since, it will be a first rule in the chain, it not validates anything.
+// String returns a StringValidator with no rules.
 func String() StringValidator {
 	return NopFunctionValidator[string]()
 }
 
-// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+// Build builds the validator chain and attaches the value to it.
 func (sv StringValidator) Build(value string) Validator {
 	return validatorOf(sv, value)
 }
 
+// With attaches the next rule to the chain.
 func (sv StringValidator) With(next StringValidator) StringValidator {
 	return Chain(sv, next)
 }
 
-// Required ensures the string is not an empty string.
+// Required ensures the string is not empty.
 func (sv StringValidator) Required() StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		if value == "" {
@@ -52,6 +52,7 @@ func (sv StringValidator) Max(length int) StringValidator {
 	})
 }
 
+// Match ensures the string matches the given pattern.
 func (sv StringValidator) Match(pattern Pattern) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		exp := pattern.RegExp()

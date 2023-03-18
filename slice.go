@@ -2,22 +2,26 @@ package goval
 
 import "context"
 
+// SliceValidator is a FunctionValidator that validates slices.
 type SliceValidator[T any, V []T] FunctionValidator[V]
 
+// Slice returns a SliceValidator with no rules.
+// T is the type of the slice elements, V is the type of the slice.
 func Slice[T any, V []T]() SliceValidator[T, V] {
 	return NopFunctionValidator[V]()
 }
 
-// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+// Build builds the validator chain and attaches the value to it.
 func (sv SliceValidator[T, V]) Build(values V) Validator {
 	return validatorOf(sv, values)
 }
 
+// With attaches the next rule to the chain.
 func (sv SliceValidator[T, V]) With(next SliceValidator[T, V]) SliceValidator[T, V] {
 	return Chain(sv, next)
 }
 
-// Required ensures the number is not a zero value.
+// Required ensures the slice is not empty.
 func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) == 0 {
@@ -27,7 +31,7 @@ func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 	})
 }
 
-// Min ensures the number is not less than the given min.
+// Min ensures the length of the slice is not less than the given min.
 func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
 	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) < min {
@@ -37,7 +41,7 @@ func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
 	})
 }
 
-// Max ensures the number is not greater than the given max.
+// Max ensures the length of the slice is not greater than the given max.
 func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) > max {
@@ -47,11 +51,12 @@ func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 	})
 }
 
-func (sv SliceValidator[T, V]) Each(builder Builder[T]) SliceValidator[T, V] {
+// Each ensures each element of the slice is satisfied by the given validator.
+func (sv SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
 	return func(ctx context.Context, values V) error {
 		errs := make([]RuleError, 0)
 		for _, value := range values {
-			if err := builder.Build(value).Validate(ctx); err != nil {
+			if err := validator.Build(value).Validate(ctx); err != nil {
 				switch et := err.(type) {
 				default:
 					return err
@@ -64,6 +69,7 @@ func (sv SliceValidator[T, V]) Each(builder Builder[T]) SliceValidator[T, V] {
 		if len(errs) > 0 {
 			return NewRuleErrors(SliceEach, errs, values)
 		}
+
 		return nil
 	}
 }

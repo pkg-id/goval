@@ -3,40 +3,41 @@ package goval_test
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval"
 	"reflect"
 	"testing"
+
+	"github.com/pkg-id/goval"
 )
 
 func TestSlice(t *testing.T) {
-	t.Run("int", SliceValidatorTestFunc[int]([]int{1}, []int{}))
-	t.Run("int8", SliceValidatorTestFunc[int8]([]int8{1}, nil))
-	t.Run("int16", SliceValidatorTestFunc[int16]([]int16{1}, []int16{}))
-	t.Run("int32", SliceValidatorTestFunc[int32]([]int32{1}, nil))
-	t.Run("int64", SliceValidatorTestFunc[int64]([]int64{1}, nil))
+	t.Run("int", SliceValidatorTestFunc([]int{1}, []int{}))
+	t.Run("int8", SliceValidatorTestFunc([]int8{1}, nil))
+	t.Run("int16", SliceValidatorTestFunc([]int16{1}, []int16{}))
+	t.Run("int32", SliceValidatorTestFunc([]int32{1}, nil))
+	t.Run("int64", SliceValidatorTestFunc([]int64{1}, nil))
 
-	t.Run("uint", SliceValidatorTestFunc[uint]([]uint{1}, nil))
-	t.Run("uint8", SliceValidatorTestFunc[uint8]([]uint8{1}, []uint8{}))
-	t.Run("uint16", SliceValidatorTestFunc[uint16]([]uint16{1}, nil))
-	t.Run("uint32", SliceValidatorTestFunc[uint32]([]uint32{1}, []uint32{}))
-	t.Run("uint64", SliceValidatorTestFunc[uint64]([]uint64{1}, nil))
+	t.Run("uint", SliceValidatorTestFunc([]uint{1}, nil))
+	t.Run("uint8", SliceValidatorTestFunc([]uint8{1}, []uint8{}))
+	t.Run("uint16", SliceValidatorTestFunc([]uint16{1}, nil))
+	t.Run("uint32", SliceValidatorTestFunc([]uint32{1}, []uint32{}))
+	t.Run("uint64", SliceValidatorTestFunc([]uint64{1}, nil))
 
-	t.Run("float32", SliceValidatorTestFunc[float32]([]float32{1.123}, nil))
-	t.Run("float64", SliceValidatorTestFunc[float64]([]float64{1.123}, []float64{}))
+	t.Run("float32", SliceValidatorTestFunc([]float32{1.123}, nil))
+	t.Run("float64", SliceValidatorTestFunc([]float64{1.123}, []float64{}))
 
-	t.Run("string", SliceValidatorTestFunc[string]([]string{"abc"}, []string{}))
+	t.Run("string", SliceValidatorTestFunc([]string{"abc"}, []string{}))
 
-	t.Run("byte", SliceValidatorTestFunc[byte]([]byte{0x1}, []byte{}))
+	t.Run("byte", SliceValidatorTestFunc([]byte{0x1}, []byte{}))
 
-	t.Run("slice", SliceValidatorTestFunc[[]int]([][]int{{1}}, [][]int{}))
+	t.Run("slice", SliceValidatorTestFunc([][]int{{1}}, [][]int{}))
 
-	t.Run("map", SliceValidatorTestFunc[map[int]int]([]map[int]int{{1: 1}}, []map[int]int{}))
+	t.Run("map", SliceValidatorTestFunc([]map[int]int{{1: 1}}, []map[int]int{}))
 
 	type X struct {
 		A int
 		B string
 	}
-	t.Run("struct", SliceValidatorRequiredTestFunc[X]([]X{{A: 0, B: ""}}, []X{}))
+	t.Run("struct", SliceValidatorRequiredTestFunc([]X{{A: 0, B: ""}}, []X{}))
 }
 
 func SliceValidatorTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
@@ -55,34 +56,34 @@ func SliceValidatorTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T)
 }
 
 func TestSliceValidator_Required(t *testing.T) {
-	t.Run("int", SliceValidatorRequiredTestFunc[int]([]int{1}, []int{}))
-	t.Run("int8", SliceValidatorRequiredTestFunc[int8]([]int8{1}, nil))
-	t.Run("int16", SliceValidatorRequiredTestFunc[int16]([]int16{1}, []int16{}))
-	t.Run("int32", SliceValidatorRequiredTestFunc[int32]([]int32{1}, nil))
-	t.Run("int64", SliceValidatorRequiredTestFunc[int64]([]int64{1}, nil))
+	t.Run("int", SliceValidatorRequiredTestFunc([]int{1}, []int{}))
+	t.Run("int8", SliceValidatorRequiredTestFunc([]int8{1}, nil))
+	t.Run("int16", SliceValidatorRequiredTestFunc([]int16{1}, []int16{}))
+	t.Run("int32", SliceValidatorRequiredTestFunc([]int32{1}, nil))
+	t.Run("int64", SliceValidatorRequiredTestFunc([]int64{1}, nil))
 
-	t.Run("uint", SliceValidatorRequiredTestFunc[uint]([]uint{1}, nil))
-	t.Run("uint8", SliceValidatorRequiredTestFunc[uint8]([]uint8{1}, []uint8{}))
-	t.Run("uint16", SliceValidatorRequiredTestFunc[uint16]([]uint16{1}, nil))
-	t.Run("uint32", SliceValidatorRequiredTestFunc[uint32]([]uint32{1}, []uint32{}))
-	t.Run("uint64", SliceValidatorRequiredTestFunc[uint64]([]uint64{1}, nil))
+	t.Run("uint", SliceValidatorRequiredTestFunc([]uint{1}, nil))
+	t.Run("uint8", SliceValidatorRequiredTestFunc([]uint8{1}, []uint8{}))
+	t.Run("uint16", SliceValidatorRequiredTestFunc([]uint16{1}, nil))
+	t.Run("uint32", SliceValidatorRequiredTestFunc([]uint32{1}, []uint32{}))
+	t.Run("uint64", SliceValidatorRequiredTestFunc([]uint64{1}, nil))
 
-	t.Run("float32", SliceValidatorRequiredTestFunc[float32]([]float32{1.123}, nil))
-	t.Run("float64", SliceValidatorRequiredTestFunc[float64]([]float64{1.123}, []float64{}))
+	t.Run("float32", SliceValidatorRequiredTestFunc([]float32{1.123}, nil))
+	t.Run("float64", SliceValidatorRequiredTestFunc([]float64{1.123}, []float64{}))
 
-	t.Run("string", SliceValidatorRequiredTestFunc[string]([]string{"abc"}, []string{}))
+	t.Run("string", SliceValidatorRequiredTestFunc([]string{"abc"}, []string{}))
 
-	t.Run("byte", SliceValidatorRequiredTestFunc[byte]([]byte{0x1}, []byte{}))
+	t.Run("byte", SliceValidatorRequiredTestFunc([]byte{0x1}, []byte{}))
 
-	t.Run("slice", SliceValidatorRequiredTestFunc[[]int]([][]int{{1}}, [][]int{}))
+	t.Run("slice", SliceValidatorRequiredTestFunc([][]int{{1}}, [][]int{}))
 
-	t.Run("map", SliceValidatorRequiredTestFunc[map[int]int]([]map[int]int{{1: 1}}, []map[int]int{}))
+	t.Run("map", SliceValidatorRequiredTestFunc([]map[int]int{{1: 1}}, []map[int]int{}))
 
 	type X struct {
 		A int
 		B string
 	}
-	t.Run("struct", SliceValidatorRequiredTestFunc[X]([]X{{A: 0, B: ""}}, []X{}))
+	t.Run("struct", SliceValidatorRequiredTestFunc([]X{{A: 0, B: ""}}, []X{}))
 }
 
 func SliceValidatorRequiredTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
@@ -119,34 +120,34 @@ func SliceValidatorRequiredTestFunc[T any, Slice []T](ok, fail Slice) func(t *te
 }
 
 func TestSliceValidator_Min(t *testing.T) {
-	t.Run("int", SliceValidatorMinTestFunc[int]([]int{1}, []int{}))
-	t.Run("int8", SliceValidatorMinTestFunc[int8]([]int8{1}, nil))
-	t.Run("int16", SliceValidatorMinTestFunc[int16]([]int16{1}, []int16{}))
-	t.Run("int32", SliceValidatorMinTestFunc[int32]([]int32{1}, nil))
-	t.Run("int64", SliceValidatorMinTestFunc[int64]([]int64{1}, nil))
+	t.Run("int", SliceValidatorMinTestFunc([]int{1}, []int{}))
+	t.Run("int8", SliceValidatorMinTestFunc([]int8{1}, nil))
+	t.Run("int16", SliceValidatorMinTestFunc([]int16{1}, []int16{}))
+	t.Run("int32", SliceValidatorMinTestFunc([]int32{1}, nil))
+	t.Run("int64", SliceValidatorMinTestFunc([]int64{1}, nil))
 
-	t.Run("uint", SliceValidatorMinTestFunc[uint]([]uint{1}, nil))
-	t.Run("uint8", SliceValidatorMinTestFunc[uint8]([]uint8{1}, []uint8{}))
-	t.Run("uint16", SliceValidatorMinTestFunc[uint16]([]uint16{1}, nil))
-	t.Run("uint32", SliceValidatorMinTestFunc[uint32]([]uint32{1}, []uint32{}))
-	t.Run("uint64", SliceValidatorMinTestFunc[uint64]([]uint64{1}, nil))
+	t.Run("uint", SliceValidatorMinTestFunc([]uint{1}, nil))
+	t.Run("uint8", SliceValidatorMinTestFunc([]uint8{1}, []uint8{}))
+	t.Run("uint16", SliceValidatorMinTestFunc([]uint16{1}, nil))
+	t.Run("uint32", SliceValidatorMinTestFunc([]uint32{1}, []uint32{}))
+	t.Run("uint64", SliceValidatorMinTestFunc([]uint64{1}, nil))
 
-	t.Run("float32", SliceValidatorMinTestFunc[float32]([]float32{1.123}, nil))
-	t.Run("float64", SliceValidatorMinTestFunc[float64]([]float64{1.123}, []float64{}))
+	t.Run("float32", SliceValidatorMinTestFunc([]float32{1.123}, nil))
+	t.Run("float64", SliceValidatorMinTestFunc([]float64{1.123}, []float64{}))
 
-	t.Run("string", SliceValidatorMinTestFunc[string]([]string{"abc"}, []string{}))
+	t.Run("string", SliceValidatorMinTestFunc([]string{"abc"}, []string{}))
 
-	t.Run("byte", SliceValidatorMinTestFunc[byte]([]byte{0x1}, []byte{}))
+	t.Run("byte", SliceValidatorMinTestFunc([]byte{0x1}, []byte{}))
 
-	t.Run("slice", SliceValidatorMinTestFunc[[]int]([][]int{{1}}, [][]int{}))
+	t.Run("slice", SliceValidatorMinTestFunc([][]int{{1}}, [][]int{}))
 
-	t.Run("map", SliceValidatorMinTestFunc[map[int]int]([]map[int]int{{1: 1}}, []map[int]int{}))
+	t.Run("map", SliceValidatorMinTestFunc([]map[int]int{{1: 1}}, []map[int]int{}))
 
 	type X struct {
 		A int
 		B string
 	}
-	t.Run("struct", SliceValidatorMinTestFunc[X]([]X{{A: 0, B: ""}}, []X{}))
+	t.Run("struct", SliceValidatorMinTestFunc([]X{{A: 0, B: ""}}, []X{}))
 }
 
 func SliceValidatorMinTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
@@ -184,34 +185,34 @@ func SliceValidatorMinTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing
 }
 
 func TestSliceValidator_Max(t *testing.T) {
-	t.Run("int", SliceValidatorMaxTestFunc[int]([]int{1}, []int{1, 2}))
-	t.Run("int8", SliceValidatorMaxTestFunc[int8]([]int8{1}, []int8{1, 2, 3}))
-	t.Run("int16", SliceValidatorMaxTestFunc[int16]([]int16{1}, []int16{1, 2}))
-	t.Run("int32", SliceValidatorMaxTestFunc[int32]([]int32{1}, []int32{1, 2, 3}))
-	t.Run("int64", SliceValidatorMaxTestFunc[int64]([]int64{1}, []int64{1, 2, 3}))
+	t.Run("int", SliceValidatorMaxTestFunc([]int{1}, []int{1, 2}))
+	t.Run("int8", SliceValidatorMaxTestFunc([]int8{1}, []int8{1, 2, 3}))
+	t.Run("int16", SliceValidatorMaxTestFunc([]int16{1}, []int16{1, 2}))
+	t.Run("int32", SliceValidatorMaxTestFunc([]int32{1}, []int32{1, 2, 3}))
+	t.Run("int64", SliceValidatorMaxTestFunc([]int64{1}, []int64{1, 2, 3}))
 
-	t.Run("uint", SliceValidatorMaxTestFunc[uint]([]uint{1}, []uint{1, 2}))
-	t.Run("uint8", SliceValidatorMaxTestFunc[uint8]([]uint8{1}, []uint8{1, 2}))
-	t.Run("uint16", SliceValidatorMaxTestFunc[uint16]([]uint16{1}, []uint16{1, 2}))
-	t.Run("uint32", SliceValidatorMaxTestFunc[uint32]([]uint32{1}, []uint32{1, 2}))
-	t.Run("uint64", SliceValidatorMaxTestFunc[uint64]([]uint64{1}, []uint64{1, 2}))
+	t.Run("uint", SliceValidatorMaxTestFunc([]uint{1}, []uint{1, 2}))
+	t.Run("uint8", SliceValidatorMaxTestFunc([]uint8{1}, []uint8{1, 2}))
+	t.Run("uint16", SliceValidatorMaxTestFunc([]uint16{1}, []uint16{1, 2}))
+	t.Run("uint32", SliceValidatorMaxTestFunc([]uint32{1}, []uint32{1, 2}))
+	t.Run("uint64", SliceValidatorMaxTestFunc([]uint64{1}, []uint64{1, 2}))
 
-	t.Run("float32", SliceValidatorMaxTestFunc[float32]([]float32{1.123}, []float32{1, 2}))
-	t.Run("float64", SliceValidatorMaxTestFunc[float64]([]float64{1.123}, []float64{1, 2}))
+	t.Run("float32", SliceValidatorMaxTestFunc([]float32{1.123}, []float32{1, 2}))
+	t.Run("float64", SliceValidatorMaxTestFunc([]float64{1.123}, []float64{1, 2}))
 
-	t.Run("string", SliceValidatorMaxTestFunc[string]([]string{"abc"}, []string{"a", "b"}))
+	t.Run("string", SliceValidatorMaxTestFunc([]string{"abc"}, []string{"a", "b"}))
 
-	t.Run("byte", SliceValidatorMaxTestFunc[byte]([]byte{0x1}, []byte{0x1, 0x2}))
+	t.Run("byte", SliceValidatorMaxTestFunc([]byte{0x1}, []byte{0x1, 0x2}))
 
-	t.Run("slice", SliceValidatorMaxTestFunc[[]int]([][]int{{1}}, [][]int{{1}, {2}}))
+	t.Run("slice", SliceValidatorMaxTestFunc([][]int{{1}}, [][]int{{1}, {2}}))
 
-	t.Run("map", SliceValidatorMaxTestFunc[map[int]int]([]map[int]int{{1: 1}}, []map[int]int{{1: 1}, {2: 2}}))
+	t.Run("map", SliceValidatorMaxTestFunc([]map[int]int{{1: 1}}, []map[int]int{{1: 1}, {2: 2}}))
 
 	type X struct {
 		A int
 		B string
 	}
-	t.Run("struct", SliceValidatorMaxTestFunc[X]([]X{{A: 0, B: ""}}, []X{{}, {}}))
+	t.Run("struct", SliceValidatorMaxTestFunc([]X{{A: 0, B: ""}}, []X{{}, {}}))
 }
 
 func SliceValidatorMaxTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
