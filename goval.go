@@ -6,10 +6,14 @@ import (
 )
 
 // Validator is an interface for all validators. It provides a contract for grouping different kinds of validators.
-// Each validator, such as StringValidator, delays the execution of its rules until it is
-// invoked via the Validate method.
+// Each validator, such as StringValidator, delays the execution of its rules until it is invoked via the Validate method.
 type Validator interface {
 	// Validate starts the execution of the Validator.
+	// When this method is called, the Validator will execute all the rules in the chain,
+	// and return the first error encountered.
+	//
+	// By default, if the error is a RuleError, it will be translated by DefaultErrorTranslator.
+	// To customize the error translation, use the SetErrorTranslator method.
 	Validate(ctx context.Context) error
 }
 
@@ -19,7 +23,7 @@ type ValidatorFunc func(ctx context.Context) error
 // Validate implements the Validator interface by invoking itself.
 func (f ValidatorFunc) Validate(ctx context.Context) error { return f(ctx) }
 
-// validatorOf is a helper function that creates a Validator from a value validator function.
+// validatorOf is a helper function that creates a Validator from a FunctionValidator and a value.
 func validatorOf[T any](fn func(ctx context.Context, value T) error, value T) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
 		err := fn(ctx, value)
@@ -27,6 +31,8 @@ func validatorOf[T any](fn func(ctx context.Context, value T) error, value T) Va
 	})
 }
 
+// translateValidatorError translates the error if it is a RuleError.
+// Otherwise, it returns the error as is.
 func translateValidatorError(ctx context.Context, err error) error {
 	if err == nil {
 		return nil
@@ -40,7 +46,10 @@ func translateValidatorError(ctx context.Context, err error) error {
 	}
 }
 
-// NopFunctionValidator does nothing and always returns nil. It's meant to be used as the first validator in a chain.
+// NopFunctionValidator does nothing and always returns nil.
+// It is useful as the first rule in the validator chain.
+// Important to note that the Chain function requires at least two functions, by using NopFunctionValidator
+// as the first rule, we ensure that the Chain function will always have at least two functions to chain.
 func NopFunctionValidator[T any]() func(context.Context, T) error {
 	return func(ctx context.Context, t T) error { return nil }
 }
@@ -53,12 +62,17 @@ type Builder[T any] interface {
 	Build(value T) Validator
 }
 
+// BuilderFunc is an adapter for creating an implementation of Builder by using an ordinary function.
 type BuilderFunc[T any] func(value T) Validator
 
+// Build implements the Builder interface by invoking itself.
 func (f BuilderFunc[T]) Build(value T) Validator { return f(value) }
 
+// FunctionValidator is a signature for a function that validates any value.
+// The context is used to pass additional information to the validator, such as the locale.
 type FunctionValidator[T any] func(ctx context.Context, value T) error
 
+// FunctionValidatorConstraint is a set of functions signatures that treats the FunctionValidator.
 type FunctionValidatorConstraint[T any] interface {
 	~func(ctx context.Context, value T) error
 }
@@ -79,6 +93,8 @@ func Chain[T any, Func FunctionValidatorConstraint[T]](f, g Func) Func {
 	}
 }
 
+// execChain executes the given functions in the order they are given.
+// If any of the functions returns an error, the execution will be stopped and the error will be returned.
 func execChain[T any, Func FunctionValidatorConstraint[T]](ctx context.Context, value T, functions ...Func) error {
 	for _, fn := range functions {
 		if err := fn(ctx, value); err != nil {
@@ -88,15 +104,17 @@ func execChain[T any, Func FunctionValidatorConstraint[T]](ctx context.Context, 
 	return nil
 }
 
-func Named[T any, B Builder[T]](name string, value T, builder B) Validator {
+// Named creates a new validator that returns KeyErrors if actual validator returns an error.
+func Named[T any, B Builder[T]](name string, value T, validator B) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
-		if err := builder.Build(value).Validate(ctx); err != nil {
+		if err := validator.Build(value).Validate(ctx); err != nil {
 			return NewKeyError(name, err)
 		}
 		return nil
 	})
 }
 
+// Each creates a slice validator that validates each element in the slice.
 func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
 	return BuilderFunc[V](func(values V) Validator {
 		return ValidatorFunc(func(ctx context.Context) error {
@@ -105,6 +123,7 @@ func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
 	})
 }
 
+// each executes the given function for each element in the slice.
 func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validator) error {
 	errs := make([]error, 0)
 	for _, value := range values {
@@ -140,6 +159,8 @@ func Execute(ctx context.Context, validators ...Validator) error {
 	return nil
 }
 
+// Pattern is an interface that defines the regular expression pattern.
 type Pattern interface {
+	// RegExp returns the compiled regular expression.
 	RegExp() *regexp.Regexp
 }

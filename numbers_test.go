@@ -3,13 +3,14 @@ package goval_test
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval"
 	"reflect"
 	"testing"
+
+	"github.com/pkg-id/goval"
 )
 
 func TestNumber(t *testing.T) {
-	t.Run("int", NumberValidatorTestFunc[int](1, 0))
+	t.Run("int", NumberValidatorTestFunc(1, 0))
 	t.Run("int8", NumberValidatorTestFunc[int8](1, 0))
 	t.Run("int16", NumberValidatorTestFunc[int16](1, 0))
 	t.Run("int32", NumberValidatorTestFunc[int32](1, 0))
@@ -22,7 +23,7 @@ func TestNumber(t *testing.T) {
 	t.Run("uint64", NumberValidatorTestFunc[uint64](1, 0))
 
 	t.Run("float32", NumberValidatorTestFunc[float32](1.123, 0.0))
-	t.Run("float64", NumberValidatorTestFunc[float64](1.123, 0.0))
+	t.Run("float64", NumberValidatorTestFunc(1.123, 0.0))
 }
 
 func NumberValidatorTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
@@ -41,7 +42,7 @@ func NumberValidatorTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testi
 }
 
 func TestNilValidator_Required(t *testing.T) {
-	t.Run("int", NumberValidatorRequiredTestFunc[int](1, 0))
+	t.Run("int", NumberValidatorRequiredTestFunc(1, 0))
 	t.Run("int8", NumberValidatorRequiredTestFunc[int8](1, 0))
 	t.Run("int16", NumberValidatorRequiredTestFunc[int16](1, 0))
 	t.Run("int32", NumberValidatorRequiredTestFunc[int32](1, 0))
@@ -54,7 +55,7 @@ func TestNilValidator_Required(t *testing.T) {
 	t.Run("uint64", NumberValidatorRequiredTestFunc[uint64](1, 0))
 
 	t.Run("float32", NumberValidatorRequiredTestFunc[float32](1.123, 0.0))
-	t.Run("float64", NumberValidatorRequiredTestFunc[float64](1.123, 0.0))
+	t.Run("float64", NumberValidatorRequiredTestFunc(1.123, 0.0))
 }
 
 func NumberValidatorRequiredTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
@@ -91,7 +92,7 @@ func NumberValidatorRequiredTestFunc[T goval.NumberConstraint](ok, fail T) func(
 }
 
 func TestNumberValidator_Min(t *testing.T) {
-	t.Run("int", NumberValidatorMinTestFunc[int](3, 0))
+	t.Run("int", NumberValidatorMinTestFunc(3, 0))
 	t.Run("int8", NumberValidatorMinTestFunc[int8](3, 0))
 	t.Run("int16", NumberValidatorMinTestFunc[int16](3, 0))
 	t.Run("int32", NumberValidatorMinTestFunc[int32](3, 0))
@@ -104,7 +105,7 @@ func TestNumberValidator_Min(t *testing.T) {
 	t.Run("uint64", NumberValidatorMinTestFunc[uint64](3, 0))
 
 	t.Run("float32", NumberValidatorMinTestFunc[float32](3.123, 0.0))
-	t.Run("float64", NumberValidatorMinTestFunc[float64](3.123, 0.0))
+	t.Run("float64", NumberValidatorMinTestFunc(3.123, 0.0))
 }
 
 func NumberValidatorMinTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
@@ -142,7 +143,7 @@ func NumberValidatorMinTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 }
 
 func TestNumberValidator_Max(t *testing.T) {
-	t.Run("int", NumberValidatorMaxTestFunc[int](3, 5))
+	t.Run("int", NumberValidatorMaxTestFunc(3, 5))
 	t.Run("int8", NumberValidatorMaxTestFunc[int8](3, 5))
 	t.Run("int16", NumberValidatorMaxTestFunc[int16](3, 5))
 	t.Run("int32", NumberValidatorMaxTestFunc[int32](3, 5))
@@ -155,7 +156,7 @@ func TestNumberValidator_Max(t *testing.T) {
 	t.Run("uint64", NumberValidatorMaxTestFunc[uint64](3, 5))
 
 	t.Run("float32", NumberValidatorMaxTestFunc[float32](3.0, 3.1))
-	t.Run("float64", NumberValidatorMaxTestFunc[float64](3.0, 3.1))
+	t.Run("float64", NumberValidatorMaxTestFunc(3.0, 3.1))
 }
 
 func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {

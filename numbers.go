@@ -2,33 +2,34 @@ package goval
 
 import (
 	"context"
+
 	"golang.org/x/exp/constraints"
 )
 
-// NumberConstraint is a generic constraint for type Integers and Floats.
+// NumberConstraint is set types that treats as numbers.
 type NumberConstraint interface {
 	constraints.Integer | constraints.Float
 }
 
-// NumberValidator is a validator for NumberConstraint type.
+// NumberValidator is a validator that validates numbers.
 type NumberValidator[T NumberConstraint] FunctionValidator[T]
 
-// Number is NumberValidator constructor. This function is used to initialize
-// the rules chain. Since, it will be a first rule in the chain, it not validates anything.
+// Number returns a NumberValidator with no rules.
 func Number[T NumberConstraint]() NumberValidator[T] {
 	return NopFunctionValidator[T]()
 }
 
-// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+// Build builds the validator chain and attaches the value to it.
 func (nv NumberValidator[T]) Build(value T) Validator {
 	return validatorOf(nv, value)
 }
 
+// With attaches the next rule to the chain.
 func (nv NumberValidator[T]) With(next NumberValidator[T]) NumberValidator[T] {
 	return Chain(nv, next)
 }
 
-// Required ensures the number is not a zero value.
+// Required ensures the number is not zero.
 func (nv NumberValidator[T]) Required() NumberValidator[T] {
 	return nv.With(func(ctx context.Context, value T) error {
 		var zero T

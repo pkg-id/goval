@@ -3,10 +3,11 @@ package goval_test
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval"
-	"github.com/pkg-id/goval/govalregex"
 	"reflect"
 	"testing"
+
+	"github.com/pkg-id/goval"
+	"github.com/pkg-id/goval/govalregex"
 )
 
 func TestString(t *testing.T) {

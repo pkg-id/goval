@@ -5,32 +5,30 @@ import (
 	"time"
 )
 
-// TimeValidator is a validator for time.Time type.
+// TimeValidator is a FunctionValidator that validates time.Time.
 type TimeValidator FunctionValidator[time.Time]
 
-// Time is TimeValidator constructor. This function is used to initialize
-// the rules chain. Since, it will be a first rule in the chain, it not validates anything.
+// Time returns a TimeValidator with no rules.
 func Time() TimeValidator {
 	return NopFunctionValidator[time.Time]()
 }
 
-// Build attaches the value so the rules chain can consume it as an input that need to be validated.
+// Build builds the validator chain and attaches the value to it.
 func (tv TimeValidator) Build(value time.Time) Validator {
 	return validatorOf(tv, value)
 }
 
-// With added TimeValidator to the rules chain.
+// With attaches the next rule to the chain.
 func (tv TimeValidator) With(next TimeValidator) TimeValidator {
 	return Chain(tv, next)
 }
 
-// Required ensures the time is not zero time instant, January 1, year 1, 00:00:00 UTC.
+// Required ensures the time is not zero.
 func (tv TimeValidator) Required() TimeValidator {
 	return tv.With(func(ctx context.Context, value time.Time) error {
 		if value.IsZero() {
 			return NewRuleError(TimeRequired, value)
 		}
-
 		return nil
 	})
 }
@@ -41,7 +39,6 @@ func (tv TimeValidator) Min(min time.Time) TimeValidator {
 		if value.Before(min) {
 			return NewRuleError(TimeMin, value, min)
 		}
-
 		return nil
 	})
 }
@@ -52,7 +49,6 @@ func (tv TimeValidator) Max(max time.Time) TimeValidator {
 		if value.After(max) {
 			return NewRuleError(TimeMax, value, max)
 		}
-
 		return nil
 	})
 }
