@@ -144,3 +144,88 @@ func TestStringValidator_Match(t *testing.T) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
 }
+
+func BenchmarkStringValidator_Build(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = goval.String().Build("")
+	}
+}
+
+func BenchmarkStringValidator_Required(b *testing.B) {
+	ctx := context.Background()
+
+	b.Run("benchmark without value", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Required().Build("").Validate(ctx)
+		}
+	})
+
+	b.Run("benchmark with value", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Required().Build("random").Validate(ctx)
+		}
+	})
+}
+
+func BenchmarkStringValidator_Min(b *testing.B) {
+	ctx := context.Background()
+
+	b.Run("with value under minimum character", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Min(10).Build("12345").Validate(ctx)
+		}
+	})
+
+	b.Run("with value above minimum character", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Min(5).Build("123456").Validate(ctx)
+		}
+	})
+}
+
+func BenchmarkStringValidator_Max(b *testing.B) {
+	ctx := context.Background()
+	b.Run("with value above maximum character", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Max(5).Build("123456").Validate(ctx)
+		}
+	})
+
+	b.Run("with value under maximum character", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Max(5).Build("1234").Validate(ctx)
+		}
+	})
+}
+
+func BenchmarkStringValidator_Match(b *testing.B) {
+	ctx := context.Background()
+
+	emailRegex := govalregex.NewLazy("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+	ipRegex := govalregex.NewLazy("(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))")
+
+	b.Run("email regex validation with valid email", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Match(emailRegex).Build("email@example.com").Validate(ctx)
+		}
+	})
+
+	b.Run("email regex validation with invalid email", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Match(emailRegex).Build("emailexample.com").Validate(ctx)
+		}
+	})
+
+	b.Run("ip address regex validation with valid ip", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Match(ipRegex).Build("127.0.0.1").Validate(ctx)
+		}
+	})
+
+	b.Run("ip address regex validation with invalid ip", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			_ = goval.String().Match(ipRegex).Build("a.b.c.d").Validate(ctx)
+		}
+	})
+
+}
