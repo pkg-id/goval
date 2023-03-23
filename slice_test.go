@@ -432,28 +432,76 @@ func SliceValidatorMaxBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 }
 
 func BenchmarkSliceValidator_Each(b *testing.B) {
-	b.Run("int", SliceValidatorEachBenchmarkFunc[int, []int]([]int{1, 2, 3}, []int{-2, 0, 4, 5}, goval.Number[int]().Min(0).Max(3)))
-	b.Run("int8", SliceValidatorEachBenchmarkFunc[int8, []int8]([]int8{1, 2, 3}, []int8{-2, 0, 4, 5}, goval.Number[int8]().Min(0).Max(3)))
-	b.Run("int16", SliceValidatorEachBenchmarkFunc[int16, []int16]([]int16{1, 2, 3}, []int16{-2, 0, 4, 5}, goval.Number[int16]().Min(0).Max(3)))
-	b.Run("int32", SliceValidatorEachBenchmarkFunc[int32, []int32]([]int32{1, 2, 3}, []int32{-2, 0, 4, 5}, goval.Number[int32]().Min(0).Max(3)))
-	b.Run("int64", SliceValidatorEachBenchmarkFunc[int64, []int64]([]int64{1, 2, 3}, []int64{-2, 0, 4, 5}, goval.Number[int64]().Min(0).Max(3)))
+	b.Run("int", SliceValidatorEachBenchmarkFunc[int, []int](
+		[]int{1, 2, 3},
+		[]int{-2, 0, 4, 5},
+		goval.Number[int]().Min(0).Max(3)))
+	b.Run("int8", SliceValidatorEachBenchmarkFunc[int8, []int8](
+		[]int8{1, 2, 3},
+		[]int8{-2, 0, 4, 5},
+		goval.Number[int8]().Min(0).Max(3)))
+	b.Run("int16", SliceValidatorEachBenchmarkFunc[int16, []int16](
+		[]int16{1, 2, 3},
+		[]int16{-2, 0, 4, 5},
+		goval.Number[int16]().Min(0).Max(3)))
+	b.Run("int32", SliceValidatorEachBenchmarkFunc[int32, []int32](
+		[]int32{1, 2, 3},
+		[]int32{-2, 0, 4, 5},
+		goval.Number[int32]().Min(0).Max(3)))
+	b.Run("int64", SliceValidatorEachBenchmarkFunc[int64, []int64](
+		[]int64{1, 2, 3},
+		[]int64{-2, 0, 4, 5},
+		goval.Number[int64]().Min(0).Max(3)))
 
-	b.Run("uint", SliceValidatorEachBenchmarkFunc[uint, []uint]([]uint{1, 2, 3}, []uint{0, 1, 4, 5}, goval.Number[uint]().Min(1).Max(3)))
-	b.Run("uint8", SliceValidatorEachBenchmarkFunc[uint8, []uint8]([]uint8{1, 2, 3}, []uint8{0, 1, 4, 5}, goval.Number[uint8]().Min(1).Max(3)))
-	b.Run("uint16", SliceValidatorEachBenchmarkFunc[uint16, []uint16]([]uint16{1, 2, 3}, []uint16{0, 1, 4, 5}, goval.Number[uint16]().Min(1).Max(3)))
-	b.Run("uint32", SliceValidatorEachBenchmarkFunc[uint32, []uint32]([]uint32{1, 2, 3}, []uint32{0, 1, 4, 5}, goval.Number[uint32]().Min(1).Max(3)))
-	b.Run("uint64", SliceValidatorEachBenchmarkFunc[uint64, []uint64]([]uint64{1, 2, 3}, []uint64{0, 1, 4, 5}, goval.Number[uint64]().Min(1).Max(3)))
+	b.Run("uint", SliceValidatorEachBenchmarkFunc[uint, []uint](
+		[]uint{1, 2, 3},
+		[]uint{0, 1, 4, 5},
+		goval.Number[uint]().Min(1).Max(3)))
+	b.Run("uint8", SliceValidatorEachBenchmarkFunc[uint8, []uint8](
+		[]uint8{1, 2, 3},
+		[]uint8{0, 1, 4, 5},
+		goval.Number[uint8]().Min(1).Max(3)))
+	b.Run("uint16", SliceValidatorEachBenchmarkFunc[uint16, []uint16](
+		[]uint16{1, 2, 3},
+		[]uint16{0, 1, 4, 5},
+		goval.Number[uint16]().Min(1).Max(3)))
+	b.Run("uint32", SliceValidatorEachBenchmarkFunc[uint32, []uint32](
+		[]uint32{1, 2, 3},
+		[]uint32{0, 1, 4, 5},
+		goval.Number[uint32]().Min(1).Max(3)))
+	b.Run("uint64", SliceValidatorEachBenchmarkFunc[uint64, []uint64](
+		[]uint64{1, 2, 3},
+		[]uint64{0, 1, 4, 5},
+		goval.Number[uint64]().Min(1).Max(3)))
 
-	b.Run("float32", SliceValidatorEachBenchmarkFunc[float32, []float32]([]float32{1.1, 2.2, 3.3}, []float32{0.5, 1.1, 4.4, 5.5}, goval.Number[float32]().Min(1).Max(3)))
-	b.Run("float64", SliceValidatorEachBenchmarkFunc[float64, []float64]([]float64{1.1, 2.2, 3.3}, []float64{0.5, 1.1, 4.4, 5.5}, goval.Number[float64]().Min(1).Max(3)))
+	b.Run("float32", SliceValidatorEachBenchmarkFunc[float32, []float32](
+		[]float32{1.1, 2.2, 3.3},
+		[]float32{0.5, 1.1, 4.4, 5.5},
+		goval.Number[float32]().Min(1).Max(3)))
+	b.Run("float64", SliceValidatorEachBenchmarkFunc[float64, []float64](
+		[]float64{1.1, 2.2, 3.3},
+		[]float64{0.5, 1.1, 4.4, 5.5},
+		goval.Number[float64]().Min(1).Max(3)))
 
-	b.Run("byte", SliceValidatorEachBenchmarkFunc[byte, []byte]([]byte{0x0, 0x1, 0x2, 0x3}, []byte{0x0, 0x1, 0x4, 0x5}, goval.Number[byte]().Min(0x1).Max(0x3)))
+	b.Run("byte", SliceValidatorEachBenchmarkFunc[byte, []byte](
+		[]byte{0x0, 0x1, 0x2, 0x3},
+		[]byte{0x0, 0x1, 0x4, 0x5},
+		goval.Number[byte]().Min(0x1).Max(0x3)))
 
-	b.Run("string", SliceValidatorEachBenchmarkFunc[string, []string]([]string{"a", "b", "c", "d"}, []string{"!", "1", "#", "4"}, goval.String().Match(govalregex.AlphaNumeric)))
+	b.Run("string", SliceValidatorEachBenchmarkFunc[string, []string](
+		[]string{"a", "b", "c", "d"},
+		[]string{"!", "1", "#", "4"},
+		goval.String().Match(govalregex.AlphaNumeric)))
 
-	b.Run("slice", SliceValidatorEachBenchmarkFunc[[]int, [][]int]([][]int{{1, 2}, {1, 2}}, [][]int{{1}, {2}}, goval.Slice[int]().Min(2)))
+	b.Run("slice", SliceValidatorEachBenchmarkFunc[[]int, [][]int](
+		[][]int{{1, 2}, {1, 2}},
+		[][]int{{1}, {2}},
+		goval.Slice[int]().Min(2)))
 
-	b.Run("map", SliceValidatorEachBenchmarkFunc[map[int]int, []map[int]int]([]map[int]int{{1: 1, 2: 2}, {3: 3, 4: 4}}, []map[int]int{{1: 1}, {2: 2}}, goval.Map[int, int]().Min(2)))
+	b.Run("map", SliceValidatorEachBenchmarkFunc[map[int]int, []map[int]int](
+		[]map[int]int{{1: 1, 2: 2}, {3: 3, 4: 4}},
+		[]map[int]int{{1: 1}, {2: 2}},
+		goval.Map[int, int]().Min(2)))
 }
 
 func SliceValidatorEachBenchmarkFunc[T any, Slice []T](validSlice Slice, errSlice Slice, validator goval.Builder[T]) func(b *testing.B) {
