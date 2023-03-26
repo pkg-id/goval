@@ -1,0 +1,19 @@
+{
+  "strings.required": "This field is required.",
+  "strings.min": "Value must be at least {{index .Args 0}} characters long.",
+  "strings.max": "Value must be less than {{index .Args 0}} characters long.",
+  "strings.match": "Value {{.Input}} does not match pattern {{index .Args 0}}.",
+  "numbers.required": "This field is required.",
+  "numbers.min": "Value must be greater than {{index .Args 0}}.",
+  "numbers.max": "Value must be less than {{index .Args 0}}.",
+  "times.required": "This field is required.",
+  "times.min": "Time must be greater than {{index .Args 0}}.",
+  "times.max": "Time must be less than {{index .Args 0}}.",
+  "slices.required": "This field is required.",
+  "slices.min": "Slice must have at least {{index .Args 0}} elements.",
+  "slices.max": "Slice must have less than {{index .Args 0}} elements.",
+  "maps.required": "This field is required.",
+  "maps.min": "Map must have at least {{index .Args 0}} entries.",
+  "maps.max": "Map must have less than {{index .Args 0}} entries.",
+  "pointers.required": "This field cannot be empty."
+}
