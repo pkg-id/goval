@@ -126,5 +126,39 @@ func TestPtrValidator_ThenPanic(t *testing.T) {
 	}()
 
 	sv := goval.String().Required()
-	goval.Ptr[string]().Then(sv).Build(nil).Validate(context.Background())
+	_ = goval.Ptr[string]().Then(sv).Build(nil).Validate(context.Background())
+}
+
+func BenchmarkPtrValidator_Required(b *testing.B) {
+	b.Run("when rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		for i := 0; i < b.N; i++ {
+			_ = goval.Ptr[int]().Required().Build(nil).Validate(ctx)
+		}
+	})
+
+	b.Run("when no rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 1
+		for i := 0; i < b.N; i++ {
+			_ = goval.Ptr[int]().Required().Build(&val).Validate(ctx)
+		}
+	})
+}
+
+func BenchmarkPtrValidator_Optional(b *testing.B) {
+	b.Run("when rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		for i := 0; i < b.N; i++ {
+			_ = goval.Ptr[int]().Optional(goval.Number[int]().Required()).Build(nil).Validate(ctx)
+		}
+	})
+
+	b.Run("when no rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 1
+		for i := 0; i < b.N; i++ {
+			_ = goval.Ptr[int]().Optional(goval.Number[int]().Required()).Build(&val).Validate(ctx)
+		}
+	})
 }
