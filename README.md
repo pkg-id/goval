@@ -1,8 +1,9 @@
 # Goval
 
-**Goval** or **Go Validator** is a package for value validation in Go. 
+**Goval** or **Go Validator** is a package for value validation in Go.
 
-The objective of this package is to provide a simple and easy-to-use validation library for Go that is easy to integrate into existing projects, and easy for developers to use.
+The objective of this package is to provide a simple and easy-to-use validation library for Go that is easy to integrate
+into existing projects, and easy for developers to use.
 The package should be easy to extend and should provide a simple way to add custom validators, with no magic happening
 behind the scenes to make it easy to understand and debug as well.
 
@@ -11,12 +12,18 @@ in this package is built using function composition. Each validation rule is a s
 composed) together to create complex validation logic. This package is also designed to avoid using reflection as much
 as possible and is safe for concurrent use.
 
-> The package is still under development and requires more validation rules to be implemented. If you would like to
-> contribute to this project, your contributions would be greatly appreciated. To contribute, simply fork the project and
-> send us a pull request. Although there is no formal format for contributing at the moment, we would appreciate it if you
-> could provide a good explanation with your pull request.
+## How to Contribute?
 
-## Features
+The package is still under development and requires more validation rules to be implemented. If you would like to
+contribute to this project, your contributions would be greatly appreciated. To contribute, simply fork the project and
+send us a pull request. Although there is no formal format for contributing at the moment, we would appreciate it if you
+could provide a good explanation with your pull request.
+
+When you clone this repository, please make sure to run `make setup` to install the required dependencies for development
+and also to set up the `pre-commit` hooks. Additionally, when you create a commit, the `pre-commit` hooks will check if the
+commit follows our standard. We use Conventional Commits.
+
+## Feature
 
 - Composable Validation Rule
 - Lightweight and easy to integrate with any Go application
@@ -24,23 +31,7 @@ as possible and is safe for concurrent use.
 - No Reflection
 - Concurrent Safe
 
-## Install
-
-Use go get
-
-```shell
-go get github.com/pkg-id/goval
-```
-
-Then, import to your own code
-
-```go
-import "github.com/pkg-id/goval"
-```
-
-## Usage
-
----
+## Example
 
 ```go
 package main
