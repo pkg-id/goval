@@ -192,3 +192,57 @@ func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 		}
 	}
 }
+
+func BenchmarkNumberValidator_Required(b *testing.B) {
+	b.Run("when rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 0
+		for i := 0; i < b.N; i++ {
+			_ = goval.Number[int]().Required().Build(val).Validate(ctx)
+		}
+	})
+
+	b.Run("when no rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 1
+		for i := 0; i < b.N; i++ {
+			_ = goval.Number[int]().Required().Build(val).Validate(ctx)
+		}
+	})
+}
+
+func BenchmarkNumberValidator_Min(b *testing.B) {
+	b.Run("when rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 9
+		for i := 0; i < b.N; i++ {
+			_ = goval.Number[int]().Min(10).Build(val).Validate(ctx)
+		}
+	})
+
+	b.Run("when no rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 9
+		for i := 0; i < b.N; i++ {
+			_ = goval.Number[int]().Min(9).Build(val).Validate(ctx)
+		}
+	})
+}
+
+func BenchmarkNumberValidator_Max(b *testing.B) {
+	b.Run("when rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 9
+		for i := 0; i < b.N; i++ {
+			_ = goval.Number[int]().Min(8).Build(val).Validate(ctx)
+		}
+	})
+
+	b.Run("when no rules violated", func(b *testing.B) {
+		ctx := context.Background()
+		val := 9
+		for i := 0; i < b.N; i++ {
+			_ = goval.Number[int]().Max(9).Build(val).Validate(ctx)
+		}
+	})
+}
