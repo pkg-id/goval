@@ -260,23 +260,29 @@ func TestSliceValidator_Each(t *testing.T) {
 
 	val = []string{"a", "c", "e"}
 	err = goval.Slice[string]().Each(goval.String().Min(2)).Build(val).Validate(ctx)
-	var errs *goval.RuleErrors
+	var errs *goval.Errors
 	if !errors.As(err, &errs) {
 		t.Fatalf("expect error type: %T; got error type: %T", errs, err)
 	}
 
-	if len(errs.Errs) != 3 {
-		t.Errorf("expect number of errors: %v; got number of errors: %v", len(val), len(errs.Errs))
+	if len(errs.Values()) != 3 {
+		t.Errorf("expect number of errors: %v; got number of errors: %v", len(val), len(errs.Values()))
 	}
 
-	for i := range errs.Errs {
-		if !errs.Errs[i].Code.Equal(goval.StringMin) {
-			t.Errorf("errs[%d]: expect the error code: %v; got error code: %v", i, goval.StringMin, errs.Errs[i].Code)
+	errsValues := errs.Values()
+	for i := range errsValues {
+		var err *goval.RuleError
+		if !errors.As(errsValues[i], &err) {
+			t.Errorf("expect errsValues[%d] is Type %T, got Type %T", i, err, errsValues[i])
 		}
 
-		inp, ok := errs.Errs[i].Input.(string)
+		if !err.Code.Equal(goval.StringMin) {
+			t.Errorf("errs[%d]: expect the error code: %v; got error code: %v", i, goval.StringMin, err.Code)
+		}
+
+		inp, ok := err.Input.(string)
 		if !ok {
-			t.Fatalf("errs[%d]: expect the error input type: %T; got error input: %T", i, val[i], errs.Errs[i].Input)
+			t.Fatalf("errs[%d]: expect the error input type: %T; got error input: %T", i, val[i], err.Input)
 		}
 
 		if inp != val[i] {

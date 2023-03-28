@@ -41,33 +41,10 @@ func (r *RuleError) Error() string                { return r.String() }
 func (r *RuleError) String() string               { return stringifyJSON(r) }
 func (r *RuleError) MarshalJSON() ([]byte, error) { return json.Marshal(auxRuleError(*r)) }
 
-// RuleErrors is an error type for multiple validation errors.
-type RuleErrors struct {
-	Code RuleCoder
-	Errs []RuleError
-	Args []any
-}
-
-// ensure RuleErrors implements jsonErrorStringer.
-var _ jsonErrorStringer = (*RuleErrors)(nil)
-
-// NewRuleErrors creates a new RuleErrors.
-func NewRuleErrors(code RuleCoder, errs []RuleError, args ...any) *RuleErrors {
-	return &RuleErrors{
-		Code: code,
-		Errs: errs,
-		Args: args,
-	}
-}
-
-func (e *RuleErrors) Error() string                { return e.String() }
-func (e *RuleErrors) String() string               { return stringifyJSON(e) }
-func (e *RuleErrors) MarshalJSON() ([]byte, error) { return json.Marshal(e.Errs) }
-
 // TextError is an error type for turning an ordinary string to an error.
 // This error type is intended to be used for creating an error that can be marshaled to JSON.
 // For example, when overriding th ErrorTranslator, the implementation requires to return an error,
-// you can used TextError to create an error message from a string literal.
+// you can use TextError to create an error message from a string literal.
 type TextError string
 
 var _ jsonErrorStringer = TextError("")
@@ -146,6 +123,7 @@ func NewErrors(errs []error) *Errors {
 	return &Errors{errs: errs}
 }
 
+func (e *Errors) Values() []error              { return e.errs }
 func (e *Errors) Error() string                { return e.String() }
 func (e *Errors) String() string               { return stringifyJSON(e) }
 func (e *Errors) MarshalJSON() ([]byte, error) { return json.Marshal(e.errs) }

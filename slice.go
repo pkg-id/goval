@@ -54,20 +54,20 @@ func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 // Each ensures each element of the slice is satisfied by the given validator.
 func (sv SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
 	return func(ctx context.Context, values V) error {
-		errs := make([]RuleError, 0)
+		errs := make([]error, 0)
 		for _, value := range values {
 			if err := validator.Build(value).Validate(ctx); err != nil {
 				switch et := err.(type) {
 				default:
 					return err
 				case *RuleError:
-					errs = append(errs, *et)
+					errs = append(errs, et)
 				}
 			}
 		}
 
 		if len(errs) > 0 {
-			return NewRuleErrors(SliceEach, errs, values)
+			return NewErrors(errs)
 		}
 
 		return nil
