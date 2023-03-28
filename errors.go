@@ -102,11 +102,12 @@ func NewKeyError(key string, err error) *KeyError {
 func (k *KeyError) Error() string  { return k.String() }
 func (k *KeyError) String() string { return stringifyJSON(k) }
 func (k *KeyError) MarshalJSON() ([]byte, error) {
-	aux := auxKeyError(*k)
 	// if the error is not a json.Marshaler, we convert it to a TextError.
 	if _, ok := k.Err.(json.Marshaler); !ok {
 		k.Err = TextError(k.Err.Error())
 	}
+
+	aux := auxKeyError(*k)
 	return json.Marshal(aux)
 }
 
