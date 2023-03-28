@@ -3,6 +3,8 @@
   "strings.min": "Nilai harus memiliki panjang minimal {{index .Args 0}} karakter.",
   "strings.max": "Nilai harus memiliki panjang maksimal {{index .Args 0}} karakter.",
   "strings.match": "Nilai {{.Input}} tidak cocok dengan pola {{index .Args 0}}.",
+  "strings.in": "Nilai {{.Input}} tidak ada di dalam opsi: {{index .Args 0}}.",
+  "strings.in_fold": "Nilai {{.Input}} tidak ada di dalam opsi: {{index .Args 0}}.",
   "numbers.required": "Kolom ini wajib diisi.",
   "numbers.min": "Nilai harus lebih besar dari {{index .Args 0}}.",
   "numbers.max": "Nilai harus lebih kecil dari {{index .Args 0}}.",

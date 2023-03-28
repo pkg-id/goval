@@ -3,6 +3,8 @@
   "strings.min": "Value must be at least {{index .Args 0}} characters long.",
   "strings.max": "Value must be less than {{index .Args 0}} characters long.",
   "strings.match": "Value {{.Input}} does not match pattern {{index .Args 0}}.",
+  "strings.in": "Value {{.Input}} is not in options: {{index .Args 0}}.",
+  "strings.in_fold": "Value {{.Input}} is not in options: {{index .Args 0}}.",
   "numbers.required": "This field is required.",
   "numbers.min": "Value must be greater than {{index .Args 0}}.",
   "numbers.max": "Value must be less than {{index .Args 0}}.",

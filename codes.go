@@ -29,6 +29,8 @@ const (
 	StringMin
 	StringMax
 	StringMatch
+	StringIn
+	StringInFold
 )
 
 const (

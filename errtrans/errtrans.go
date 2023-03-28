@@ -49,6 +49,8 @@ var ruleCodeToTemplateKey = map[goval.RuleCoder]string{
 	goval.StringMin:      "strings.min",
 	goval.StringMax:      "strings.max",
 	goval.StringMatch:    "strings.match",
+	goval.StringIn:       "strings.in",
+	goval.StringInFold:   "strings.in_fold",
 	goval.NumberRequired: "numbers.required",
 	goval.NumberMin:      "numbers.min",
 	goval.NumberMax:      "numbers.max",
