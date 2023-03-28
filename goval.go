@@ -125,7 +125,7 @@ func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
 
 // each executes the given function for each element in the slice.
 func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validator) error {
-	errs := make([]error, 0)
+	errs := make(Errors, 0)
 	for _, value := range values {
 		err := fn(value).Validate(ctx)
 		if err != nil {
@@ -134,7 +134,7 @@ func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validato
 	}
 
 	if len(errs) != 0 {
-		return NewErrors(errs)
+		return errs
 	}
 
 	return nil
@@ -142,7 +142,7 @@ func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validato
 
 // Execute executes the given validators and collects the errors into a single error
 func Execute(ctx context.Context, validators ...Validator) error {
-	errs := make([]error, 0)
+	errs := make(Errors, 0)
 	for _, validator := range validators {
 		if validator != nil {
 			err := validator.Validate(ctx)
@@ -153,7 +153,7 @@ func Execute(ctx context.Context, validators ...Validator) error {
 	}
 
 	if len(errs) != 0 {
-		return NewErrors(errs)
+		return errs
 	}
 
 	return nil

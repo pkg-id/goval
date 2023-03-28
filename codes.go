@@ -1,53 +1,56 @@
 package goval
 
-type RuleCode int
+type ruleCode int
+
+func (r ruleCode) Equal(other RuleCoder) bool {
+	v, ok := other.(ruleCode)
+	return ok && r == v
+}
+
+type RuleCoder interface {
+	Equal(other RuleCoder) bool
+}
 
 const (
-	ruleCodeNilBase RuleCode = (1 + iota) * 1_000
-	ruleCodeBaseString
-	ruleCodeBaseNumber
-	ruleCodeBaseSlice
-	ruleCodeBaseMap
-	ruleCodeBaseTime
+	rcPointer ruleCode = (1 + iota) * 1_000
+	rcString
+	rcNumber
+	rcSlice
+	rcMap
+	rcTime
 )
 
 const (
-	NilRequired = ruleCodeNilBase + iota
+	PtrRequired = rcPointer + iota
 )
 
 const (
-	StringRequired = ruleCodeBaseString + iota
+	StringRequired = rcString + iota
 	StringMin
 	StringMax
 	StringMatch
 )
 
 const (
-	NumberRequired = ruleCodeBaseNumber + iota
+	NumberRequired = rcNumber + iota
 	NumberMin
 	NumberMax
 )
 
 const (
-	SliceRequired = ruleCodeBaseSlice + iota
+	SliceRequired = rcSlice + iota
 	SliceMin
 	SliceMax
-	SliceEach
 )
 
 const (
-	MapRequired = ruleCodeBaseMap + iota
+	MapRequired = rcMap + iota
 	MapMin
 	MapMax
-	MapEach
 )
 
 const (
-	TimeRequired = ruleCodeBaseTime + iota
+	TimeRequired = rcTime + iota
 	TimeMin
 	TimeMax
 )
-
-func IsCodeEqual(a, b RuleCode) bool {
-	return a == b
-}

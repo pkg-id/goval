@@ -31,7 +31,7 @@ func TestStringValidator_Required(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.StringRequired) {
+	if !exp.Code.Equal(goval.StringRequired) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
 	}
 
@@ -62,7 +62,7 @@ func TestStringValidator_Min(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.StringMin) {
+	if !exp.Code.Equal(goval.StringMin) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMin, exp.Code)
 	}
 
@@ -94,7 +94,7 @@ func TestStringValidator_Max(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.StringMax) {
+	if !exp.Code.Equal(goval.StringMax) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMax, exp.Code)
 	}
 
@@ -126,7 +126,7 @@ func TestStringValidator_Match(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.StringMatch) {
+	if !exp.Code.Equal(goval.StringMatch) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMatch, exp.Code)
 	}
 

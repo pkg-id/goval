@@ -28,8 +28,8 @@ func TestPtrValidator_Required(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.NilRequired) {
-		t.Errorf("expect the error code: %v; got error code: %v", goval.NilRequired, exp.Code)
+	if !exp.Code.Equal(goval.PtrRequired) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.PtrRequired, exp.Code)
 	}
 
 	inp, ok := exp.Input.(*string)
@@ -69,7 +69,7 @@ func TestPtrValidator_Optional(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.StringRequired) {
+	if !exp.Code.Equal(goval.StringRequired) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
 	}
 
@@ -100,7 +100,7 @@ func TestPtrValidator_Then(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.StringRequired) {
+	if !exp.Code.Equal(goval.StringRequired) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
 	}
 
