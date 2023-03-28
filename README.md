@@ -1,32 +1,39 @@
 # Goval
 
-Goval is a powerful and easy-to-use library that provides a set of functions for validating
-various types of data in Go programming language.
-This library is designed to simplify the process of data validation and reduce the likelihood of errors and vulnerabilities in applications.
+**Goval** or **Go Validator** is a package for value validation in Go. 
 
-## Design
+The objective of this package is to provide a simple and easy-to-use validation library for Go that is easy to integrate into existing projects, and easy for developers to use.
+The package should be easy to extend and should provide a simple way to add custom validators, with no magic happening
+behind the scenes to make it easy to understand and debug as well.
 
-The Engineering Design behind this package can be accessed in `DESIGN.md`.
+This package is designed to enhance the capabilities of the Go function as a first-class citizen. That means everything
+in this package is built using function composition. Each validation rule is a simple function that can be chained (
+composed) together to create complex validation logic. This package is also designed to avoid using reflection as much
+as possible and is safe for concurrent use.
+
+> The package is still under development and requires more validation rules to be implemented. If you would like to
+> contribute to this project, your contributions would be greatly appreciated. To contribute, simply fork the project and
+> send us a pull request. Although there is no formal format for contributing at the moment, we would appreciate it if you
+> could provide a good explanation with your pull request.
 
 ## Features
 
----
-
-- Validate strings, numbers, dates, structs, and more
-- Customizable error messages and validation rules
+- Composable Validation Rule
 - Lightweight and easy to integrate with any Go application
-- Built-in support for validating structs
+- Support Generics
+- No Reflection
+- Concurrent Safe
 
 ## Install
 
----
-
 Use go get
+
 ```shell
 go get github.com/pkg-id/goval
 ```
 
 Then, import to your own code
+
 ```go
 import "github.com/pkg-id/goval"
 ```
@@ -89,11 +96,6 @@ func main() {
 }
 ```
 
-## Contributing
-
----
-
 ## License
 
----
 Distributed under MIT License, please see license file within the code for more details.
