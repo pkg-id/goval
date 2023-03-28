@@ -54,6 +54,7 @@ var ruleCodeToTemplateKey = map[goval.RuleCoder]string{
 	goval.NumberRequired: "numbers.required",
 	goval.NumberMin:      "numbers.min",
 	goval.NumberMax:      "numbers.max",
+	goval.NumberIn:       "numbers.in",
 	goval.SliceRequired:  "slices.required",
 	goval.SliceMin:       "slices.min",
 	goval.SliceMax:       "slices.max",

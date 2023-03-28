@@ -8,6 +8,7 @@
   "numbers.required": "This field is required.",
   "numbers.min": "Value must be greater than {{index .Args 0}}.",
   "numbers.max": "Value must be less than {{index .Args 0}}.",
+  "numbers.in": "Value {{.Input}} is not in options: {{index .Args 0}}.",
   "times.required": "This field is required.",
   "times.min": "Time must be greater than {{index .Args 0}}.",
   "times.max": "Time must be less than {{index .Args 0}}.",

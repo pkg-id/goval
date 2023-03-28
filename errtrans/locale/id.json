@@ -8,6 +8,7 @@
   "numbers.required": "Kolom ini wajib diisi.",
   "numbers.min": "Nilai harus lebih besar dari {{index .Args 0}}.",
   "numbers.max": "Nilai harus lebih kecil dari {{index .Args 0}}.",
+  "numbers.in": "Nilai {{.Input}} tidak ada di dalam opsi: {{index .Args 0}}.",
   "times.required": "Kolom ini wajib diisi.",
   "times.min": "Waktu harus lebih besar dari {{index .Args 0}}.",
   "times.max": "Waktu harus lebih kecil dari {{index .Args 0}}.",

@@ -37,6 +37,7 @@ const (
 	NumberRequired = rcNumber + iota
 	NumberMin
 	NumberMax
+	NumberIn
 )
 
 const (
