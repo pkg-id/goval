@@ -112,22 +112,14 @@ func (k *KeyError) MarshalJSON() ([]byte, error) {
 }
 
 // Errors is a type for collecting multiple errors and bundling them into a single error.
-type Errors struct {
-	errs []error
-}
+type Errors []error
 
 // ensure Errors implements jsonErrorStringer.
-var _ jsonErrorStringer = (*Errors)(nil)
+var _ jsonErrorStringer = make(Errors, 0)
 
-// NewErrors creates a new error collector.
-func NewErrors(errs []error) *Errors {
-	return &Errors{errs: errs}
-}
-
-func (e *Errors) Values() []error              { return e.errs }
-func (e *Errors) Error() string                { return e.String() }
-func (e *Errors) String() string               { return stringifyJSON(e) }
-func (e *Errors) MarshalJSON() ([]byte, error) { return json.Marshal(e.errs) }
+func (e Errors) Error() string                { return e.String() }
+func (e Errors) String() string               { return stringifyJSON(e) }
+func (e Errors) MarshalJSON() ([]byte, error) { return json.Marshal([]error(e)) }
 
 // stringifyJSON converts a json.Marshaler to a string.
 // If the json.Marshaler returns an error, the error is returned as a string.

@@ -54,7 +54,7 @@ func (mv MapValidator[K, V]) Max(max int) MapValidator[K, V] {
 // Each ensures each element of the map is satisfied by the given validator.
 func (mv MapValidator[K, V]) Each(validator Builder[V]) MapValidator[K, V] {
 	return func(ctx context.Context, values map[K]V) error {
-		errs := make([]error, 0)
+		errs := make(Errors, 0)
 		for _, value := range values {
 			if err := validator.Build(value).Validate(ctx); err != nil {
 				switch et := err.(type) {
@@ -67,7 +67,7 @@ func (mv MapValidator[K, V]) Each(validator Builder[V]) MapValidator[K, V] {
 		}
 
 		if len(errs) > 0 {
-			return NewErrors(errs)
+			return errs
 		}
 		return nil
 	}
