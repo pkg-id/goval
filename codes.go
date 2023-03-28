@@ -41,14 +41,12 @@ const (
 	SliceRequired = rcSlice + iota
 	SliceMin
 	SliceMax
-	SliceEach
 )
 
 const (
 	MapRequired = rcMap + iota
 	MapMin
 	MapMax
-	MapEach
 )
 
 const (

@@ -144,16 +144,12 @@ func TestMapValidator_Each(t *testing.T) {
 		t.Errorf("expect error; got no error")
 	}
 
-	var exp *goval.RuleErrors
+	var exp goval.Errors
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !exp.Code.Equal(goval.MapEach) {
-		t.Errorf("expect the error code: %v; got error code: %v", goval.MapEach, exp.Code)
-	}
-
-	if len(exp.Errs) != 2 {
-		t.Errorf("expect the error length: %d; got error length: %d", 2, len(exp.Errs))
+	if len(exp) != 2 {
+		t.Errorf("expect the error length: %d; got error length: %d", 2, len(exp))
 	}
 }
