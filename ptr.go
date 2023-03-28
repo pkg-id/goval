@@ -22,7 +22,7 @@ func (f PtrValidator[T]) With(next PtrValidator[T]) PtrValidator[T] {
 func (f PtrValidator[T]) Required() PtrValidator[T] {
 	return f.With(func(ctx context.Context, value *T) error {
 		if value == nil {
-			return NewRuleError(NilRequired, value)
+			return NewRuleError(PtrRequired, value)
 		}
 		return nil
 	})

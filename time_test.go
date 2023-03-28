@@ -30,7 +30,7 @@ func TestTimeValidator_Required(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.TimeRequired) {
+	if !exp.Code.Equal(goval.TimeRequired) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.TimeRequired, exp.Code)
 	}
 
@@ -64,7 +64,7 @@ func TestTimeValidator_Min(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.TimeMin) {
+	if !exp.Code.Equal(goval.TimeMin) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMin, exp.Code)
 	}
 
@@ -99,7 +99,7 @@ func TestTimeValidator_Max(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.TimeMax) {
+	if !exp.Code.Equal(goval.TimeMax) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMax, exp.Code)
 	}
 

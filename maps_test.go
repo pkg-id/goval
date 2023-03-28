@@ -29,7 +29,7 @@ func TestMapValidator_Required(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.MapRequired) {
+	if !exp.Code.Equal(goval.MapRequired) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapRequired, exp.Code)
 	}
 
@@ -65,7 +65,7 @@ func TestMapValidator_Min(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.MapMin) {
+	if !exp.Code.Equal(goval.MapMin) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapMin, exp.Code)
 	}
 
@@ -107,7 +107,7 @@ func TestMapValidator_Max(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.MapMax) {
+	if !exp.Code.Equal(goval.MapMax) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapMax, exp.Code)
 	}
 
@@ -149,7 +149,7 @@ func TestMapValidator_Each(t *testing.T) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 	}
 
-	if !goval.IsCodeEqual(exp.Code, goval.MapEach) {
+	if !exp.Code.Equal(goval.MapEach) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapEach, exp.Code)
 	}
 

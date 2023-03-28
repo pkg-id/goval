@@ -44,7 +44,7 @@ func LanguageFromContext(ctx context.Context, fallback string) string {
 	return lang
 }
 
-var ruleCodeToTemplateKey = map[goval.RuleCode]string{
+var ruleCodeToTemplateKey = map[goval.RuleCoder]string{
 	goval.StringRequired: "strings.required",
 	goval.StringMin:      "strings.min",
 	goval.StringMax:      "strings.max",
@@ -61,7 +61,7 @@ var ruleCodeToTemplateKey = map[goval.RuleCode]string{
 	goval.MapRequired:    "maps.required",
 	goval.MapMin:         "maps.min",
 	goval.MapMax:         "maps.max",
-	goval.NilRequired:    "pointers.required",
+	goval.PtrRequired:    "pointers.required",
 }
 
 type Option func(t *Translator)

@@ -72,7 +72,7 @@ func NumberValidatorRequiredTestFunc[T goval.NumberConstraint](ok, fail T) func(
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
 
-		if !goval.IsCodeEqual(exp.Code, goval.NumberRequired) {
+		if !exp.Code.Equal(goval.NumberRequired) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberRequired, exp.Code)
 		}
 
@@ -122,7 +122,7 @@ func NumberValidatorMinTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
 
-		if !goval.IsCodeEqual(exp.Code, goval.NumberMin) {
+		if !exp.Code.Equal(goval.NumberMin) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMin, exp.Code)
 		}
 
@@ -173,7 +173,7 @@ func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
 
-		if !goval.IsCodeEqual(exp.Code, goval.NumberMax) {
+		if !exp.Code.Equal(goval.NumberMax) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMax, exp.Code)
 		}
 

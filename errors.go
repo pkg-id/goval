@@ -20,16 +20,16 @@ type auxRuleError RuleError
 
 // RuleError is an error type for validation errors.
 type RuleError struct {
-	Code  RuleCode `json:"code"`           // the error code that identifies which rule failed.
-	Input any      `json:"input"`          // the actual value that failed the validation.
-	Args  []any    `json:"args,omitempty"` // additional arguments for the error.
+	Code  RuleCoder `json:"code"`           // the error code that identifies which rule failed.
+	Input any       `json:"input"`          // the actual value that failed the validation.
+	Args  []any     `json:"args,omitempty"` // additional arguments for the error.
 }
 
 // ensure RuleError implements jsonErrorStringer.
 var _ jsonErrorStringer = (*RuleError)(nil)
 
 // NewRuleError creates a new RuleError.
-func NewRuleError(code RuleCode, input any, args ...any) *RuleError {
+func NewRuleError(code RuleCoder, input any, args ...any) *RuleError {
 	return &RuleError{
 		Code:  code,
 		Input: input,
@@ -43,7 +43,7 @@ func (r *RuleError) MarshalJSON() ([]byte, error) { return json.Marshal(auxRuleE
 
 // RuleErrors is an error type for multiple validation errors.
 type RuleErrors struct {
-	Code RuleCode
+	Code RuleCoder
 	Errs []RuleError
 	Args []any
 }
@@ -52,7 +52,7 @@ type RuleErrors struct {
 var _ jsonErrorStringer = (*RuleErrors)(nil)
 
 // NewRuleErrors creates a new RuleErrors.
-func NewRuleErrors(code RuleCode, errs []RuleError, args ...any) *RuleErrors {
+func NewRuleErrors(code RuleCoder, errs []RuleError, args ...any) *RuleErrors {
 	return &RuleErrors{
 		Code: code,
 		Errs: errs,

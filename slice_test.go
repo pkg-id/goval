@@ -101,7 +101,7 @@ func SliceValidatorRequiredTestFunc[T any, Slice []T](ok, fail Slice) func(t *te
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
 
-		if !goval.IsCodeEqual(exp.Code, goval.SliceRequired) {
+		if !exp.Code.Equal(goval.SliceRequired) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.SliceRequired, exp.Code)
 		}
 
@@ -165,7 +165,7 @@ func SliceValidatorMinTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
 
-		if !goval.IsCodeEqual(exp.Code, goval.SliceMin) {
+		if !exp.Code.Equal(goval.SliceMin) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.SliceMin, exp.Code)
 		}
 
@@ -230,7 +230,7 @@ func SliceValidatorMaxTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
 
-		if !goval.IsCodeEqual(exp.Code, goval.SliceMax) {
+		if !exp.Code.Equal(goval.SliceMax) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.SliceMax, exp.Code)
 		}
 
@@ -270,7 +270,7 @@ func TestSliceValidator_Each(t *testing.T) {
 	}
 
 	for i := range errs.Errs {
-		if !goval.IsCodeEqual(errs.Errs[i].Code, goval.StringMin) {
+		if !errs.Errs[i].Code.Equal(goval.StringMin) {
 			t.Errorf("errs[%d]: expect the error code: %v; got error code: %v", i, goval.StringMin, errs.Errs[i].Code)
 		}
 
