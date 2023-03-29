@@ -1,6 +1,9 @@
 package goval
 
-import "context"
+import (
+	"context"
+	"github.com/pkg-id/goval/funcs"
+)
 
 // SliceValidator is a FunctionValidator that validates slices.
 type SliceValidator[T any, V []T] FunctionValidator[V]
@@ -54,17 +57,7 @@ func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 // Each ensures each element of the slice is satisfied by the given validator.
 func (sv SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
 	return func(ctx context.Context, values V) error {
-		errs := make(Errors, 0)
-		for _, value := range values {
-			if err := validator.Build(value).Validate(ctx); err != nil {
-				switch et := err.(type) {
-				default:
-					return err
-				case *RuleError:
-					errs = append(errs, et)
-				}
-			}
-		}
-		return errs.NilOrErr()
+		validators := funcs.Map(values, validator.Build)
+		return execute(ctx, validators)
 	}
 }

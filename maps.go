@@ -1,6 +1,9 @@
 package goval
 
-import "context"
+import (
+	"context"
+	"github.com/pkg-id/goval/funcs"
+)
 
 // MapValidator is a FunctionValidator that validates map[K]V.
 type MapValidator[K comparable, V any] FunctionValidator[map[K]V]
@@ -26,7 +29,6 @@ func (mv MapValidator[K, V]) Required() MapValidator[K, V] {
 		if len(values) == 0 {
 			return NewRuleError(MapRequired, values)
 		}
-
 		return nil
 	})
 }
@@ -54,17 +56,7 @@ func (mv MapValidator[K, V]) Max(max int) MapValidator[K, V] {
 // Each ensures each element of the map is satisfied by the given validator.
 func (mv MapValidator[K, V]) Each(validator Builder[V]) MapValidator[K, V] {
 	return func(ctx context.Context, values map[K]V) error {
-		errs := make(Errors, 0)
-		for _, value := range values {
-			if err := validator.Build(value).Validate(ctx); err != nil {
-				switch et := err.(type) {
-				default:
-					return err
-				case *RuleError:
-					errs = append(errs, et)
-				}
-			}
-		}
-		return errs.NilOrErr()
+		validators := funcs.Map(funcs.Values(values), validator.Build)
+		return execute(ctx, validators)
 	}
 }
