@@ -5,15 +5,6 @@ import (
 	"sync"
 )
 
-const (
-	alphaNumericRegexString = "^[a-zA-Z0-9]+$"
-)
-
-var (
-	// AlphaNumeric is a lazy-compiled regex for alphanumeric characters only.
-	AlphaNumeric = NewLazy(alphaNumericRegexString)
-)
-
 // LazyCompiler is a lazy-compiled regex.
 // That is, the regex is compiled only when the RegExp method is called.
 type LazyCompiler struct {
