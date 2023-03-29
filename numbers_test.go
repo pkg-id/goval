@@ -193,6 +193,57 @@ func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 	}
 }
 
+func TestNumberValidator_In(t *testing.T) {
+	t.Run("int", NumberValidatorInTestFunc(3, []int{1, 3}, []int{2, 4}))
+	t.Run("int8", NumberValidatorInTestFunc[int8](3, []int8{1, 3}, []int8{2, 4}))
+	t.Run("int16", NumberValidatorInTestFunc[int16](3, []int16{1, 3}, []int16{2, 4}))
+	t.Run("int32", NumberValidatorInTestFunc[int32](3, []int32{1, 3}, []int32{2, 4}))
+	t.Run("int64", NumberValidatorInTestFunc[int64](3, []int64{1, 3}, []int64{2, 4}))
+
+	t.Run("uint", NumberValidatorInTestFunc[uint](3, []uint{1, 3}, []uint{2, 4}))
+	t.Run("uint8", NumberValidatorInTestFunc[uint8](3, []uint8{1, 3}, []uint8{2, 4}))
+	t.Run("uint16", NumberValidatorInTestFunc[uint16](3, []uint16{1, 3}, []uint16{2, 4}))
+	t.Run("uint32", NumberValidatorInTestFunc[uint32](3, []uint32{1, 3}, []uint32{2, 4}))
+	t.Run("uint64", NumberValidatorInTestFunc[uint64](3, []uint64{1, 3}, []uint64{2, 4}))
+
+	t.Run("float32", NumberValidatorInTestFunc[float32](3.0, []float32{3.0, 2.0}, []float32{3.01}))
+	t.Run("float64", NumberValidatorInTestFunc(3.0, []float64{3.0, 2.0}, []float64{3.01}))
+}
+
+func NumberValidatorInTestFunc[T goval.NumberConstraint, V []T](num T, ok V, fail V) func(t *testing.T) {
+	return func(t *testing.T) {
+		ctx := context.Background()
+		err := goval.Number[T]().In(ok...).Build(num).Validate(ctx)
+		if err != nil {
+			t.Errorf("expect no error; got error: %v", err)
+		}
+
+		err = goval.Number[T]().In(fail...).Build(num).Validate(ctx)
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberIn) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberIn, exp.Code)
+		}
+
+		inp, ok := exp.Input.(T)
+		if !ok {
+			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
+		}
+
+		if inp != num {
+			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
+		}
+
+		args := []any{fail}
+		if !reflect.DeepEqual(exp.Args, args) {
+			t.Errorf("expect the error args: %v, type: %T; got error args: %v, type: %T", args, args, exp.Args, exp.Args)
+		}
+	}
+}
+
 func BenchmarkNumberValidator_Required(b *testing.B) {
 	b.Run("when rules violated", func(b *testing.B) {
 		ctx := context.Background()

@@ -2,7 +2,7 @@ package goval
 
 import (
 	"context"
-
+	"github.com/pkg-id/goval/funcs"
 	"golang.org/x/exp/constraints"
 )
 
@@ -55,6 +55,17 @@ func (nv NumberValidator[T]) Max(max T) NumberValidator[T] {
 	return nv.With(func(ctx context.Context, value T) error {
 		if value > max {
 			return NewRuleError(NumberMax, value, max)
+		}
+		return nil
+	})
+}
+
+// In ensures that the provided number is one of the specified options.
+func (nv NumberValidator[T]) In(options ...T) NumberValidator[T] {
+	return nv.With(func(ctx context.Context, value T) error {
+		ok := funcs.Contains(options, func(opt T) bool { return opt == value })
+		if !ok {
+			return NewRuleError(NumberIn, value, options)
 		}
 		return nil
 	})

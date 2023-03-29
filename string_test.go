@@ -145,6 +145,70 @@ func TestStringValidator_Match(t *testing.T) {
 	}
 }
 
+func TestStringValidator_In(t *testing.T) {
+	ctx := context.Background()
+	err := goval.String().In("a", "b", "c").Build("a").Validate(ctx)
+	if err != nil {
+		t.Errorf("expect no error; got error: %v", err)
+	}
+
+	err = goval.String().In("a", "b", "c").Build("A").Validate(ctx)
+	var exp *goval.RuleError
+	if !errors.As(err, &exp) {
+		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+	}
+
+	if !exp.Code.Equal(goval.StringIn) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.StringIn, exp.Code)
+	}
+
+	inp, ok := exp.Input.(string)
+	if !ok {
+		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
+	}
+
+	if inp != "A" {
+		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
+	}
+
+	args := []any{[]string{"a", "b", "c"}}
+	if !reflect.DeepEqual(exp.Args, args) {
+		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
+	}
+}
+
+func TestStringValidator_InFold(t *testing.T) {
+	ctx := context.Background()
+	err := goval.String().InFold("a", "b", "c").Build("C").Validate(ctx)
+	if err != nil {
+		t.Errorf("expect no error; got error: %v", err)
+	}
+
+	err = goval.String().InFold("a", "b", "c").Build("Z").Validate(ctx)
+	var exp *goval.RuleError
+	if !errors.As(err, &exp) {
+		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+	}
+
+	if !exp.Code.Equal(goval.StringInFold) {
+		t.Errorf("expect the error code: %v; got error code: %v", goval.StringInFold, exp.Code)
+	}
+
+	inp, ok := exp.Input.(string)
+	if !ok {
+		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
+	}
+
+	if inp != "Z" {
+		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
+	}
+
+	args := []any{[]string{"a", "b", "c"}}
+	if !reflect.DeepEqual(exp.Args, args) {
+		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
+	}
+}
+
 func BenchmarkStringValidator_Build(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		_ = goval.String().Build("")

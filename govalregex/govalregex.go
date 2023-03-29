@@ -10,11 +10,11 @@ const (
 )
 
 var (
-	// AlphaNumeric is a lazy compiled regex for alpha numeric characters only.
+	// AlphaNumeric is a lazy-compiled regex for alphanumeric characters only.
 	AlphaNumeric = NewLazy(alphaNumericRegexString)
 )
 
-// LazyCompiler is a lazy compiled regex.
+// LazyCompiler is a lazy-compiled regex.
 // That is, the regex is compiled only when the RegExp method is called.
 type LazyCompiler struct {
 	once     sync.Once

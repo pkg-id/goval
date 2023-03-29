@@ -29,12 +29,15 @@ const (
 	StringMin
 	StringMax
 	StringMatch
+	StringIn
+	StringInFold
 )
 
 const (
 	NumberRequired = rcNumber + iota
 	NumberMin
 	NumberMax
+	NumberIn
 )
 
 const (

@@ -2,6 +2,8 @@ package goval
 
 import (
 	"context"
+	"github.com/pkg-id/goval/funcs"
+	"strings"
 )
 
 // StringValidator is a FunctionValidator that validates string.
@@ -58,6 +60,29 @@ func (sv StringValidator) Match(pattern Pattern) StringValidator {
 		exp := pattern.RegExp()
 		if !exp.MatchString(value) {
 			return NewRuleError(StringMatch, value, exp.String())
+		}
+		return nil
+	})
+}
+
+// In ensures that the provided string is one of the specified options.
+// This validation is case-sensitive, use InFold to perform a case-insensitive In validation.
+func (sv StringValidator) In(options ...string) StringValidator {
+	return sv.With(func(ctx context.Context, value string) error {
+		ok := funcs.Contains(options, func(opt string) bool { return value == opt })
+		if !ok {
+			return NewRuleError(StringIn, value, options)
+		}
+		return nil
+	})
+}
+
+// InFold ensures that the provided string is one of the specified options with case-insensitivity.
+func (sv StringValidator) InFold(options ...string) StringValidator {
+	return sv.With(func(ctx context.Context, value string) error {
+		ok := funcs.Contains(options, func(opt string) bool { return strings.EqualFold(value, opt) })
+		if !ok {
+			return NewRuleError(StringInFold, value, options)
 		}
 		return nil
 	})
