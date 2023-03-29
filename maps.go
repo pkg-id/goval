@@ -65,10 +65,6 @@ func (mv MapValidator[K, V]) Each(validator Builder[V]) MapValidator[K, V] {
 				}
 			}
 		}
-
-		if len(errs) > 0 {
-			return errs
-		}
-		return nil
+		return errs.NilOrErr()
 	}
 }

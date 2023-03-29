@@ -133,30 +133,19 @@ func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validato
 		}
 	}
 
-	if len(errs) != 0 {
-		return errs
-	}
-
-	return nil
+	return errs.NilOrErr()
 }
 
 // Execute executes the given validators and collects the errors into a single error
 func Execute(ctx context.Context, validators ...Validator) error {
 	errs := make(Errors, 0)
 	for _, validator := range validators {
-		if validator != nil {
-			err := validator.Validate(ctx)
-			if err != nil {
-				errs = append(errs, err)
-			}
+		err := validator.Validate(ctx)
+		if err != nil {
+			errs = append(errs, err)
 		}
 	}
-
-	if len(errs) != 0 {
-		return errs
-	}
-
-	return nil
+	return errs.NilOrErr()
 }
 
 // Pattern is an interface that defines the regular expression pattern.

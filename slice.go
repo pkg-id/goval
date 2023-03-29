@@ -65,11 +65,6 @@ func (sv SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
 				}
 			}
 		}
-
-		if len(errs) > 0 {
-			return errs
-		}
-
-		return nil
+		return errs.NilOrErr()
 	}
 }
