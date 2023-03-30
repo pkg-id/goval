@@ -91,4 +91,22 @@ func TestExecute(t *testing.T) {
 			t.Fatalf("expect not error")
 		}
 	})
+
+	t.Run("when error is unknown type", func(t *testing.T) {
+		ctx := context.Background()
+
+		internalError := errors.New("internal error")
+		customValidator := func(ctx context.Context, value int) error {
+			return internalError
+		}
+
+		err := goval.Execute(ctx,
+			goval.String().Required().Min(2).Build("a"),
+			goval.Number[int]().Required().With(customValidator).Build(8),
+		)
+
+		if err != internalError {
+			t.Fatalf("expect validation error is discarded and internal error is returned; but got %v", err)
+		}
+	})
 }

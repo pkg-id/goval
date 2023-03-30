@@ -2,6 +2,7 @@ package goval
 
 import (
 	"context"
+	"github.com/pkg-id/goval/funcs"
 	"regexp"
 )
 
@@ -118,45 +119,47 @@ func Named[T any, B Builder[T]](name string, value T, validator B) Validator {
 func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
 	return BuilderFunc[V](func(values V) Validator {
 		return ValidatorFunc(func(ctx context.Context) error {
-			return each(ctx, values, fn)
+			return execute(ctx, funcs.Map(values, fn))
 		})
 	})
 }
 
-// each executes the given function for each element in the slice.
-func each[T any, V []T](ctx context.Context, values V, fn func(value T) Validator) error {
-	errs := make(Errors, 0)
-	for _, value := range values {
-		err := fn(value).Validate(ctx)
-		if err != nil {
-			errs = append(errs, err)
-		}
-	}
-
-	if len(errs) != 0 {
-		return errs
-	}
-
-	return nil
-}
-
 // Execute executes the given validators and collects the errors into a single error
 func Execute(ctx context.Context, validators ...Validator) error {
-	errs := make(Errors, 0)
-	for _, validator := range validators {
-		if validator != nil {
-			err := validator.Validate(ctx)
-			if err != nil {
+	return execute(ctx, validators)
+}
+
+// execute executes the given validators and collects the errors into a single error.
+func execute(ctx context.Context, validators []Validator) error {
+	internalError := make(chan error, 1)
+	validateError := make(chan error, 1)
+	reducer := validatorReducer(ctx, internalError)
+	go func() {
+		validateError <- funcs.
+			Reduce(validators, Errors{}, reducer).
+			NilIfEmpty()
+	}()
+	select {
+	case ie := <-internalError:
+		return ie
+	case ve := <-validateError:
+		return ve
+	}
+}
+
+func validatorReducer(ctx context.Context, internalError chan error) func(errs Errors, validator Validator) Errors {
+	return func(errs Errors, validator Validator) Errors {
+		err := validator.Validate(ctx)
+		if err != nil {
+			switch err.(type) {
+			default:
+				internalError <- err
+			case *RuleError, Errors:
 				errs = append(errs, err)
 			}
 		}
-	}
-
-	if len(errs) != 0 {
 		return errs
 	}
-
-	return nil
 }
 
 // Pattern is an interface that defines the regular expression pattern.

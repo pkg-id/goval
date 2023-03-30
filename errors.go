@@ -120,6 +120,12 @@ var _ jsonErrorStringer = make(Errors, 0)
 func (e Errors) Error() string                { return e.String() }
 func (e Errors) String() string               { return stringifyJSON(e) }
 func (e Errors) MarshalJSON() ([]byte, error) { return json.Marshal([]error(e)) }
+func (e Errors) NilIfEmpty() error {
+	if len(e) > 0 {
+		return e
+	}
+	return nil
+}
 
 // stringifyJSON converts a json.Marshaler to a string.
 // If the json.Marshaler returns an error, the error is returned as a string.
