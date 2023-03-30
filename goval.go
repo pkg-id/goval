@@ -162,6 +162,15 @@ func validatorReducer(ctx context.Context, internalError chan error) func(errs E
 	}
 }
 
+// Use executes the given validator function
+func Use[T any](fn func(v T) Validator) Builder[T] {
+	return BuilderFunc[T](func(value T) Validator {
+		return ValidatorFunc(func(ctx context.Context) error {
+			return fn(value).Validate(ctx)
+		})
+	})
+}
+
 // Pattern is an interface that defines the regular expression pattern.
 type Pattern interface {
 	// RegExp returns the compiled regular expression.
