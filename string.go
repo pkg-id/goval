@@ -28,7 +28,7 @@ func (sv StringValidator) With(next StringValidator) StringValidator {
 func (sv StringValidator) Required() StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		if value == "" {
-			return NewRuleError(StringRequired, value)
+			return NewRuleError(StringRequired)
 		}
 		return nil
 	})
@@ -38,7 +38,7 @@ func (sv StringValidator) Required() StringValidator {
 func (sv StringValidator) Min(length int) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		if len(value) < length {
-			return NewRuleError(StringMin, value, length)
+			return NewRuleError(StringMin, length)
 		}
 		return nil
 	})
@@ -48,7 +48,7 @@ func (sv StringValidator) Min(length int) StringValidator {
 func (sv StringValidator) Max(length int) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		if len(value) > length {
-			return NewRuleError(StringMax, value, length)
+			return NewRuleError(StringMax, length)
 		}
 		return nil
 	})
@@ -59,7 +59,7 @@ func (sv StringValidator) Match(pattern Pattern) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		exp := pattern.RegExp()
 		if !exp.MatchString(value) {
-			return NewRuleError(StringMatch, value, exp.String())
+			return NewRuleError(StringMatch, exp.String())
 		}
 		return nil
 	})
@@ -71,7 +71,7 @@ func (sv StringValidator) In(options ...string) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		ok := funcs.Contains(options, func(opt string) bool { return value == opt })
 		if !ok {
-			return NewRuleError(StringIn, value, options)
+			return NewRuleError(StringIn, options)
 		}
 		return nil
 	})
@@ -82,7 +82,7 @@ func (sv StringValidator) InFold(options ...string) StringValidator {
 	return sv.With(func(ctx context.Context, value string) error {
 		ok := funcs.Contains(options, func(opt string) bool { return strings.EqualFold(value, opt) })
 		if !ok {
-			return NewRuleError(StringInFold, value, options)
+			return NewRuleError(StringInFold, options)
 		}
 		return nil
 	})

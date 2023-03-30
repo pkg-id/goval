@@ -27,7 +27,7 @@ func (tv TimeValidator) With(next TimeValidator) TimeValidator {
 func (tv TimeValidator) Required() TimeValidator {
 	return tv.With(func(ctx context.Context, value time.Time) error {
 		if value.IsZero() {
-			return NewRuleError(TimeRequired, value)
+			return NewRuleError(TimeRequired)
 		}
 		return nil
 	})
@@ -37,7 +37,7 @@ func (tv TimeValidator) Required() TimeValidator {
 func (tv TimeValidator) Min(min time.Time) TimeValidator {
 	return tv.With(func(ctx context.Context, value time.Time) error {
 		if value.Before(min) {
-			return NewRuleError(TimeMin, value, min)
+			return NewRuleError(TimeMin, min)
 		}
 		return nil
 	})
@@ -47,7 +47,7 @@ func (tv TimeValidator) Min(min time.Time) TimeValidator {
 func (tv TimeValidator) Max(max time.Time) TimeValidator {
 	return tv.With(func(ctx context.Context, value time.Time) error {
 		if value.After(max) {
-			return NewRuleError(TimeMax, value, max)
+			return NewRuleError(TimeMax, max)
 		}
 		return nil
 	})

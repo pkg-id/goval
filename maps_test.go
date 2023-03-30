@@ -33,15 +33,6 @@ func TestMapValidator_Required(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapRequired, exp.Code)
 	}
 
-	inp, ok := exp.Input.(map[string]string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", map[string]string{}, exp.Input)
-	}
-
-	if len(inp) != 0 {
-		t.Errorf("expect the error input value: %v; got error input value: %v", map[string]string{}, inp)
-	}
-
 	if exp.Args != nil {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
@@ -67,15 +58,6 @@ func TestMapValidator_Min(t *testing.T) {
 
 	if !exp.Code.Equal(goval.MapMin) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapMin, exp.Code)
-	}
-
-	inp, ok := exp.Input.(map[string]string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", val, exp.Input)
-	}
-
-	if len(inp) != len(val) {
-		t.Errorf("expect the error input value: %v; got error input value: %v", val, inp)
 	}
 
 	args := []any{2}
@@ -109,15 +91,6 @@ func TestMapValidator_Max(t *testing.T) {
 
 	if !exp.Code.Equal(goval.MapMax) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.MapMax, exp.Code)
-	}
-
-	inp, ok := exp.Input.(map[string]string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", val, exp.Input)
-	}
-
-	if len(inp) != len(val) {
-		t.Errorf("expect the error input value: %v; got error input value: %v", val, inp)
 	}
 
 	args := []any{2}

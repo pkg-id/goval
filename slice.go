@@ -28,7 +28,7 @@ func (sv SliceValidator[T, V]) With(next SliceValidator[T, V]) SliceValidator[T,
 func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) == 0 {
-			return NewRuleError(SliceRequired, values)
+			return NewRuleError(SliceRequired)
 		}
 		return nil
 	})
@@ -38,7 +38,7 @@ func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
 	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) < min {
-			return NewRuleError(SliceMin, values, min)
+			return NewRuleError(SliceMin, min)
 		}
 		return nil
 	})
@@ -48,7 +48,7 @@ func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
 func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 	return sv.With(func(ctx context.Context, values V) error {
 		if len(values) > max {
-			return NewRuleError(SliceMax, values, max)
+			return NewRuleError(SliceMax, max)
 		}
 		return nil
 	})
