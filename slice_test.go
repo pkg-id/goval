@@ -105,15 +105,6 @@ func SliceValidatorRequiredTestFunc[T any, Slice []T](ok, fail Slice) func(t *te
 			t.Errorf("expect the error code: %v; got error code: %v", goval.SliceRequired, exp.Code)
 		}
 
-		inp, ok := exp.Input.(Slice)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if !reflect.DeepEqual(inp, fail) {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
-		}
-
 		if exp.Args != nil {
 			t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 		}
@@ -167,15 +158,6 @@ func SliceValidatorMinTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing
 
 		if !exp.Code.Equal(goval.SliceMin) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.SliceMin, exp.Code)
-		}
-
-		inp, ok := exp.Input.(Slice)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if !reflect.DeepEqual(inp, fail) {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
 		}
 
 		args := []any{1}
@@ -234,15 +216,6 @@ func SliceValidatorMaxTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing
 			t.Errorf("expect the error code: %v; got error code: %v", goval.SliceMax, exp.Code)
 		}
 
-		inp, ok := exp.Input.(Slice)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if !reflect.DeepEqual(inp, fail) {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
-		}
-
 		args := []any{1}
 		if !reflect.DeepEqual(exp.Args, args) {
 			t.Errorf("expect the error args: %v, type: %T; got error args: %v, type: %T", args, args, exp.Args, exp.Args)
@@ -277,15 +250,6 @@ func TestSliceValidator_Each(t *testing.T) {
 
 		if !err.Code.Equal(goval.StringMin) {
 			t.Errorf("errs[%d]: expect the error code: %v; got error code: %v", i, goval.StringMin, err.Code)
-		}
-
-		inp, ok := err.Input.(string)
-		if !ok {
-			t.Fatalf("errs[%d]: expect the error input type: %T; got error input: %T", i, val[i], err.Input)
-		}
-
-		if inp != val[i] {
-			t.Errorf("errs[%d]: expect the error input value: %v; got error input value: %v", i, val[i], inp)
 		}
 	}
 }

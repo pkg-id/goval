@@ -76,15 +76,6 @@ func NumberValidatorRequiredTestFunc[T goval.NumberConstraint](ok, fail T) func(
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberRequired, exp.Code)
 		}
 
-		inp, ok := exp.Input.(T)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if inp != fail {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
-		}
-
 		if exp.Args != nil {
 			t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 		}
@@ -124,15 +115,6 @@ func NumberValidatorMinTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 
 		if !exp.Code.Equal(goval.NumberMin) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMin, exp.Code)
-		}
-
-		inp, ok := exp.Input.(T)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if inp != fail {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
 		}
 
 		args := []any{T(3)}
@@ -177,15 +159,6 @@ func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMax, exp.Code)
 		}
 
-		inp, ok := exp.Input.(T)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if inp != fail {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
-		}
-
 		args := []any{T(3)}
 		if !reflect.DeepEqual(exp.Args, args) {
 			t.Errorf("expect the error args: %v, type: %T; got error args: %v, type: %T", args, args, exp.Args, exp.Args)
@@ -226,15 +199,6 @@ func NumberValidatorInTestFunc[T goval.NumberConstraint, V []T](num T, ok V, fai
 
 		if !exp.Code.Equal(goval.NumberIn) {
 			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberIn, exp.Code)
-		}
-
-		inp, ok := exp.Input.(T)
-		if !ok {
-			t.Fatalf("expect the error input type: %T; got error input: %T", fail, exp.Input)
-		}
-
-		if inp != num {
-			t.Errorf("expect the error input value: %v; got error input value: %v", fail, inp)
 		}
 
 		args := []any{fail}

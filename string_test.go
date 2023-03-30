@@ -35,15 +35,6 @@ func TestStringValidator_Required(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
 	}
 
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
-	}
-
 	if exp.Args != nil {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
@@ -64,15 +55,6 @@ func TestStringValidator_Min(t *testing.T) {
 
 	if !exp.Code.Equal(goval.StringMin) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMin, exp.Code)
-	}
-
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "ab" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
 	}
 
 	args := []any{3}
@@ -98,15 +80,6 @@ func TestStringValidator_Max(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMax, exp.Code)
 	}
 
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "abc" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
-	}
-
 	args := []any{2}
 	if !reflect.DeepEqual(exp.Args, args) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
@@ -128,15 +101,6 @@ func TestStringValidator_Match(t *testing.T) {
 
 	if !exp.Code.Equal(goval.StringMatch) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringMatch, exp.Code)
-	}
-
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "abc??" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
 	}
 
 	args := []any{govalregex.AlphaNumeric.RegExp().String()}
@@ -162,15 +126,6 @@ func TestStringValidator_In(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringIn, exp.Code)
 	}
 
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "A" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
-	}
-
 	args := []any{[]string{"a", "b", "c"}}
 	if !reflect.DeepEqual(exp.Args, args) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
@@ -192,15 +147,6 @@ func TestStringValidator_InFold(t *testing.T) {
 
 	if !exp.Code.Equal(goval.StringInFold) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringInFold, exp.Code)
-	}
-
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "Z" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
 	}
 
 	args := []any{[]string{"a", "b", "c"}}

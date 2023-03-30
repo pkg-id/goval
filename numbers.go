@@ -34,7 +34,7 @@ func (nv NumberValidator[T]) Required() NumberValidator[T] {
 	return nv.With(func(ctx context.Context, value T) error {
 		var zero T
 		if value == zero {
-			return NewRuleError(NumberRequired, value)
+			return NewRuleError(NumberRequired)
 		}
 		return nil
 	})
@@ -44,7 +44,7 @@ func (nv NumberValidator[T]) Required() NumberValidator[T] {
 func (nv NumberValidator[T]) Min(min T) NumberValidator[T] {
 	return nv.With(func(ctx context.Context, value T) error {
 		if value < min {
-			return NewRuleError(NumberMin, value, min)
+			return NewRuleError(NumberMin, min)
 		}
 		return nil
 	})
@@ -54,7 +54,7 @@ func (nv NumberValidator[T]) Min(min T) NumberValidator[T] {
 func (nv NumberValidator[T]) Max(max T) NumberValidator[T] {
 	return nv.With(func(ctx context.Context, value T) error {
 		if value > max {
-			return NewRuleError(NumberMax, value, max)
+			return NewRuleError(NumberMax, max)
 		}
 		return nil
 	})
@@ -65,7 +65,7 @@ func (nv NumberValidator[T]) In(options ...T) NumberValidator[T] {
 	return nv.With(func(ctx context.Context, value T) error {
 		ok := funcs.Contains(options, func(opt T) bool { return opt == value })
 		if !ok {
-			return NewRuleError(NumberIn, value, options)
+			return NewRuleError(NumberIn, options)
 		}
 		return nil
 	})

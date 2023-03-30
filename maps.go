@@ -27,7 +27,7 @@ func (mv MapValidator[K, V]) With(next MapValidator[K, V]) MapValidator[K, V] {
 func (mv MapValidator[K, V]) Required() MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
 		if len(values) == 0 {
-			return NewRuleError(MapRequired, values)
+			return NewRuleError(MapRequired)
 		}
 		return nil
 	})
@@ -37,7 +37,7 @@ func (mv MapValidator[K, V]) Required() MapValidator[K, V] {
 func (mv MapValidator[K, V]) Min(min int) MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
 		if len(values) < min {
-			return NewRuleError(MapMin, values, min)
+			return NewRuleError(MapMin, min)
 		}
 		return nil
 	})
@@ -47,7 +47,7 @@ func (mv MapValidator[K, V]) Min(min int) MapValidator[K, V] {
 func (mv MapValidator[K, V]) Max(max int) MapValidator[K, V] {
 	return mv.With(func(ctx context.Context, values map[K]V) error {
 		if len(values) > max {
-			return NewRuleError(MapMax, values, max)
+			return NewRuleError(MapMax, max)
 		}
 		return nil
 	})

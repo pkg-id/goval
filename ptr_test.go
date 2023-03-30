@@ -32,15 +32,6 @@ func TestPtrValidator_Required(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.PtrRequired, exp.Code)
 	}
 
-	inp, ok := exp.Input.(*string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", (*string)(nil), exp.Input)
-	}
-
-	if inp != nil {
-		t.Errorf("expect the error input value: %v; got error input value: %v", nil, inp)
-	}
-
 	if exp.Args != nil {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
@@ -73,15 +64,6 @@ func TestPtrValidator_Optional(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
 	}
 
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
-	}
-
 	if exp.Args != nil {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
@@ -102,15 +84,6 @@ func TestPtrValidator_Then(t *testing.T) {
 
 	if !exp.Code.Equal(goval.StringRequired) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
-	}
-
-	inp, ok := exp.Input.(string)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if inp != "" {
-		t.Errorf("expect the error input value: %q; got error input value: %q", "", inp)
 	}
 
 	if exp.Args != nil {

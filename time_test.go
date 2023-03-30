@@ -34,15 +34,6 @@ func TestTimeValidator_Required(t *testing.T) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.TimeRequired, exp.Code)
 	}
 
-	inp, ok := exp.Input.(time.Time)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if !inp.IsZero() {
-		t.Errorf("expect the error input value: %q; got error input value: %q", time.Time{}, inp)
-	}
-
 	if exp.Args != nil {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
@@ -66,15 +57,6 @@ func TestTimeValidator_Min(t *testing.T) {
 
 	if !exp.Code.Equal(goval.TimeMin) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMin, exp.Code)
-	}
-
-	inp, ok := exp.Input.(time.Time)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if !inp.Equal(tMin) {
-		t.Errorf("expect the error input value: %q; got error input value: %q", tMin, inp)
 	}
 
 	args := []any{tNow}
@@ -101,15 +83,6 @@ func TestTimeValidator_Max(t *testing.T) {
 
 	if !exp.Code.Equal(goval.TimeMax) {
 		t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMax, exp.Code)
-	}
-
-	inp, ok := exp.Input.(time.Time)
-	if !ok {
-		t.Fatalf("expect the error input type: %T; got error input: %T", "", exp.Input)
-	}
-
-	if !inp.Equal(tMax) {
-		t.Errorf("expect the error input value: %q; got error input value: %q", tMax, inp)
 	}
 
 	args := []any{tNow}
