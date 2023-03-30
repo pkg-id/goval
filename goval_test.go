@@ -110,3 +110,46 @@ func TestExecute(t *testing.T) {
 		}
 	})
 }
+
+func TestUse(t *testing.T) {
+
+	type Product struct {
+		ID    int64   `json:"id"`
+		Price float64 `json:"price"`
+	}
+
+	validator := func(p Product) goval.Validator {
+		return goval.ValidatorFunc(func(ctx context.Context) error {
+			return goval.Execute(ctx,
+				goval.Named("id", p.ID, goval.Number[int64]().Required()),
+				goval.Named("price", p.Price, goval.Number[float64]().Required()),
+			)
+		})
+	}
+
+	t.Run("when validation fails", func(t *testing.T) {
+		var p Product
+
+		ctx := context.Background()
+		err := goval.Execute(ctx, goval.Named[Product]("product", p, goval.Use[Product](validator)))
+
+		var exp goval.Errors
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+	})
+
+	t.Run("when validation ok", func(t *testing.T) {
+		p := Product{
+			ID:    1,
+			Price: 10_000,
+		}
+
+		ctx := context.Background()
+		err := goval.Execute(ctx, goval.Named[Product]("product", p, goval.Use[Product](validator)))
+
+		if err != nil {
+			t.Fatalf("expect not error")
+		}
+	})
+}
