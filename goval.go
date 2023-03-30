@@ -154,7 +154,7 @@ func validatorReducer(ctx context.Context, internalError chan error) func(errs E
 			switch err.(type) {
 			default:
 				internalError <- err
-			case *RuleError, Errors:
+			case *RuleError, *KeyError, Errors:
 				errs = append(errs, err)
 			}
 		}

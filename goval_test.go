@@ -133,7 +133,7 @@ func TestUse(t *testing.T) {
 		ctx := context.Background()
 		err := goval.Execute(ctx, goval.Named[Product]("product", p, goval.Use[Product](validator)))
 
-		var exp *goval.KeyError
+		var exp goval.Errors
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
 		}
