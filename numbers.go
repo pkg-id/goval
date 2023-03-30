@@ -2,8 +2,8 @@ package goval
 
 import (
 	"context"
+	"github.com/pkg-id/goval/constraints"
 	"github.com/pkg-id/goval/funcs"
-	"golang.org/x/exp/constraints"
 )
 
 // NumberConstraint is set types that treats as numbers.
