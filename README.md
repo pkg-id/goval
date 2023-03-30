@@ -1,4 +1,8 @@
 # Goval
+[![GoDoc](https://godoc.org/github.com/pkg-id/env?status.svg)](https://godoc.org/github.com/pkg-id/goval)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/pkg-id/goval/master/LICENSE)
+[![Go Report Card](https://goreportcard.com/badge/github.com/pkg-id/goval)](https://goreportcard.com/report/github.com/pkg-id/goval)
+[![codecov](https://codecov.io/gh/pkg-id/goval/branch/develop/graph/badge.svg?token=FCC0ZNH1D7)](https://codecov.io/gh/pkg-id/goval)
 
 **Goval** or **Go Validator** is a package for value validation in Go.
 
