@@ -125,6 +125,11 @@ func Each[T any, V []T](validator RuleValidator[T]) RuleValidator[V] {
 	})
 }
 
+// EachFunc creates a slice validator that validates each element in the slice.
+func EachFunc[T any, V []T](validator RuleValidatorFunc[T]) RuleValidator[V] {
+	return Each[T, V](validator)
+}
+
 func Bind[T any](value T, validator RuleValidator[T]) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
 		return validator.Validate(ctx, value)
