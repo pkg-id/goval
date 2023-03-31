@@ -13,8 +13,8 @@ type LazyCompiler struct {
 	compiled *regexp.Regexp
 }
 
-// NewLazy creates a new LazyCompiler.
-func NewLazy(expr string) *LazyCompiler {
+// Compile compiles regex expression, this compiles operation could be panic.
+func Compile(expr string) *LazyCompiler {
 	return &LazyCompiler{
 		once:     sync.Once{},
 		expr:     expr,

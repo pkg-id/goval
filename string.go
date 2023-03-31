@@ -56,6 +56,7 @@ func (f StringValidator) Max(length int) StringValidator {
 }
 
 // Match ensures the string matches the given pattern.
+// If pattern cause panic, will be recovered.
 func (f StringValidator) Match(pattern Pattern) StringValidator {
 	return f.With(func(ctx context.Context, value string) (err error) {
 		defer func() {
