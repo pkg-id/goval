@@ -3,9 +3,10 @@ package goval_test
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval/govalregex"
 	"reflect"
 	"testing"
+
+	"github.com/pkg-id/goval/govalregex"
 
 	"github.com/pkg-id/goval"
 )
@@ -362,27 +363,27 @@ func SliceValidatorMaxBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 }
 
 func BenchmarkSliceValidator_Each(b *testing.B) {
-	b.Run("int", SliceValidatorEachBenchmarkFunc[int, []int](
+	b.Run("int", SliceValidatorEachBenchmarkFunc[int](
 		[]int{1, 2, 3},
 		[]int{-2, 0, 4, 5},
 		goval.Number[int]().Min(0).Max(3)))
 
-	b.Run("byte", SliceValidatorEachBenchmarkFunc[byte, []byte](
+	b.Run("byte", SliceValidatorEachBenchmarkFunc[byte](
 		[]byte{0x0, 0x1, 0x2, 0x3},
 		[]byte{0x0, 0x1, 0x4, 0x5},
 		goval.Number[byte]().Min(0x1).Max(0x3)))
 
-	b.Run("string", SliceValidatorEachBenchmarkFunc[string, []string](
+	b.Run("string", SliceValidatorEachBenchmarkFunc[string](
 		[]string{"a", "b", "c", "d"},
 		[]string{"!", "1", "#", "4"},
 		goval.String().Match(govalregex.AlphaNumeric)))
 
-	b.Run("slice", SliceValidatorEachBenchmarkFunc[[]int, [][]int](
+	b.Run("slice", SliceValidatorEachBenchmarkFunc[[]int](
 		[][]int{{1, 2}, {1, 2}},
 		[][]int{{1}, {2}},
 		goval.Slice[int]().Min(2)))
 
-	b.Run("map", SliceValidatorEachBenchmarkFunc[map[int]int, []map[int]int](
+	b.Run("map", SliceValidatorEachBenchmarkFunc[map[int]int](
 		[]map[int]int{{1: 1, 2: 2}, {3: 3, 4: 4}},
 		[]map[int]int{{1: 1}, {2: 2}},
 		goval.Map[int, int]().Min(2)))

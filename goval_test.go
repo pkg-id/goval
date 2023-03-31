@@ -3,8 +3,9 @@ package goval_test
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval"
 	"testing"
+
+	"github.com/pkg-id/goval"
 )
 
 func TestNamed(t *testing.T) {
@@ -129,7 +130,7 @@ func TestUse(t *testing.T) {
 		var p Product
 
 		ctx := context.Background()
-		err := goval.Execute(ctx, goval.Named[Product]("product", p, goval.Use[Product](validator)))
+		err := goval.Execute(ctx, goval.Named("product", p, goval.Use(validator)))
 
 		var exp goval.Errors
 		if !errors.As(err, &exp) {
@@ -144,7 +145,7 @@ func TestUse(t *testing.T) {
 		}
 
 		ctx := context.Background()
-		err := goval.Execute(ctx, goval.Named[Product]("product", p, goval.Use[Product](validator)))
+		err := goval.Execute(ctx, goval.Named("product", p, goval.Use(validator)))
 
 		if err != nil {
 			t.Fatalf("expect not error")

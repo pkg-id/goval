@@ -168,18 +168,18 @@ func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *te
 
 func TestNumberValidator_In(t *testing.T) {
 	t.Run("int", NumberValidatorInTestFunc(3, []int{1, 3}, []int{2, 4}))
-	t.Run("int8", NumberValidatorInTestFunc[int8](3, []int8{1, 3}, []int8{2, 4}))
-	t.Run("int16", NumberValidatorInTestFunc[int16](3, []int16{1, 3}, []int16{2, 4}))
-	t.Run("int32", NumberValidatorInTestFunc[int32](3, []int32{1, 3}, []int32{2, 4}))
-	t.Run("int64", NumberValidatorInTestFunc[int64](3, []int64{1, 3}, []int64{2, 4}))
+	t.Run("int8", NumberValidatorInTestFunc(3, []int8{1, 3}, []int8{2, 4}))
+	t.Run("int16", NumberValidatorInTestFunc(3, []int16{1, 3}, []int16{2, 4}))
+	t.Run("int32", NumberValidatorInTestFunc(3, []int32{1, 3}, []int32{2, 4}))
+	t.Run("int64", NumberValidatorInTestFunc(3, []int64{1, 3}, []int64{2, 4}))
 
-	t.Run("uint", NumberValidatorInTestFunc[uint](3, []uint{1, 3}, []uint{2, 4}))
-	t.Run("uint8", NumberValidatorInTestFunc[uint8](3, []uint8{1, 3}, []uint8{2, 4}))
-	t.Run("uint16", NumberValidatorInTestFunc[uint16](3, []uint16{1, 3}, []uint16{2, 4}))
-	t.Run("uint32", NumberValidatorInTestFunc[uint32](3, []uint32{1, 3}, []uint32{2, 4}))
-	t.Run("uint64", NumberValidatorInTestFunc[uint64](3, []uint64{1, 3}, []uint64{2, 4}))
+	t.Run("uint", NumberValidatorInTestFunc(3, []uint{1, 3}, []uint{2, 4}))
+	t.Run("uint8", NumberValidatorInTestFunc(3, []uint8{1, 3}, []uint8{2, 4}))
+	t.Run("uint16", NumberValidatorInTestFunc(3, []uint16{1, 3}, []uint16{2, 4}))
+	t.Run("uint32", NumberValidatorInTestFunc(3, []uint32{1, 3}, []uint32{2, 4}))
+	t.Run("uint64", NumberValidatorInTestFunc(3, []uint64{1, 3}, []uint64{2, 4}))
 
-	t.Run("float32", NumberValidatorInTestFunc[float32](3.0, []float32{3.0, 2.0}, []float32{3.01}))
+	t.Run("float32", NumberValidatorInTestFunc(3.0, []float32{3.0, 2.0}, []float32{3.01}))
 	t.Run("float64", NumberValidatorInTestFunc(3.0, []float64{3.0, 2.0}, []float64{3.01}))
 }
 
