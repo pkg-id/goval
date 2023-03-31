@@ -11,7 +11,7 @@ type StringValidator FunctionValidator[string]
 
 // String returns a StringValidator with no rules.
 func String() StringValidator {
-	return NopFunctionValidator[string]()
+	return NopFunctionValidator[string]
 }
 
 // Validate executes the validation rules immediately.

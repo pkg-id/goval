@@ -10,7 +10,7 @@ type MapValidator[K comparable, V any] FunctionValidator[map[K]V]
 
 // Map returns a MapValidator with no rules.
 func Map[K comparable, V any]() MapValidator[K, V] {
-	return NopFunctionValidator[map[K]V]()
+	return NopFunctionValidator[map[K]V]
 }
 
 // Validate executes the validation rules immediately.
@@ -55,8 +55,8 @@ func (f MapValidator[K, V]) Max(max int) MapValidator[K, V] {
 
 // Each ensures each element of the map is satisfied by the given validator.
 func (f MapValidator[K, V]) Each(validator RuleValidator[V]) MapValidator[K, V] {
-	return func(ctx context.Context, values map[K]V) error {
+	return f.With(func(ctx context.Context, values map[K]V) error {
 		validators := funcs.Map(funcs.Values(values), RuleValidatorToValidatorFactory(validator))
 		return execute(ctx, validators)
-	}
+	})
 }

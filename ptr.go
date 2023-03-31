@@ -6,7 +6,7 @@ import "context"
 type PtrValidator[T any] FunctionValidator[*T]
 
 // Ptr returns a PtrValidator with no rules.
-func Ptr[T any]() PtrValidator[T] { return NopFunctionValidator[*T]() }
+func Ptr[T any]() PtrValidator[T] { return NopFunctionValidator[*T] }
 
 // Validate executes the validation rules immediately.
 func (f PtrValidator[T]) Validate(ctx context.Context, value *T) error {

@@ -10,7 +10,7 @@ type TimeValidator FunctionValidator[time.Time]
 
 // Time returns a TimeValidator with no rules.
 func Time() TimeValidator {
-	return NopFunctionValidator[time.Time]()
+	return NopFunctionValidator[time.Time]
 }
 
 // Validate executes the validation rules immediately.

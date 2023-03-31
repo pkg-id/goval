@@ -16,7 +16,7 @@ type NumberValidator[T NumberConstraint] FunctionValidator[T]
 
 // Number returns a NumberValidator with no rules.
 func Number[T NumberConstraint]() NumberValidator[T] {
-	return NopFunctionValidator[T]()
+	return NopFunctionValidator[T]
 }
 
 // Validate executes the validation rules immediately.

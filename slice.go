@@ -11,7 +11,7 @@ type SliceValidator[T any, V []T] FunctionValidator[V]
 // Slice returns a SliceValidator with no rules.
 // T is the type of the slice elements, V is the type of the slice.
 func Slice[T any, V []T]() SliceValidator[T, V] {
-	return NopFunctionValidator[V]()
+	return NopFunctionValidator[V]
 }
 
 // Validate executes the validation rules immediately.
@@ -56,8 +56,8 @@ func (f SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 
 // Each ensures each element of the slice is satisfied by the given validator.
 func (f SliceValidator[T, V]) Each(validator RuleValidator[T]) SliceValidator[T, V] {
-	return func(ctx context.Context, values V) error {
+	return f.With(func(ctx context.Context, values V) error {
 		validators := funcs.Map(values, RuleValidatorToValidatorFactory(validator))
 		return execute(ctx, validators)
-	}
+	})
 }

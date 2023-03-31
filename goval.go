@@ -59,19 +59,15 @@ func translateValidatorError(ctx context.Context, err error) error {
 // It is useful as the first rule in the validator chain.
 // Important to note that the Chain function requires at least two functions, by using NopFunctionValidator
 // as the first rule, we ensure that the Chain function will always have at least two functions to chain.
-func NopFunctionValidator[T any]() func(context.Context, T) error {
-	return func(ctx context.Context, t T) error { return nil }
-}
+func NopFunctionValidator[T any](ctx context.Context, val T) error { return nil }
 
 // FunctionValidator is a signature for a function that validates any value.
 // The context is used to pass additional information to the validator, such as the locale.
 type FunctionValidator[T any] func(ctx context.Context, value T) error
 
-func RuleValidatorToValidatorFactory[T any](f RuleValidator[T]) func(value T) Validator {
-	return func(value T) Validator {
-		return ValidatorFunc(func(ctx context.Context) error {
-			return f.Validate(ctx, value)
-		})
+func RuleValidatorToValidatorFactory[T any, factory func(T) Validator](f RuleValidator[T]) factory {
+	return func(val T) Validator {
+		return Bind(val, f)
 	}
 }
 
