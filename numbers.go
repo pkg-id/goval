@@ -16,22 +16,22 @@ type NumberValidator[T NumberConstraint] FunctionValidator[T]
 
 // Number returns a NumberValidator with no rules.
 func Number[T NumberConstraint]() NumberValidator[T] {
-	return NopFunctionValidator[T]()
+	return NopFunctionValidator[T]
 }
 
-// Build builds the validator chain and attaches the value to it.
-func (nv NumberValidator[T]) Build(value T) Validator {
-	return validatorOf(nv, value)
+// Validate executes the validation rules immediately.
+func (f NumberValidator[T]) Validate(ctx context.Context, value T) error {
+	return validatorOf(f, value).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.
-func (nv NumberValidator[T]) With(next NumberValidator[T]) NumberValidator[T] {
-	return Chain(nv, next)
+func (f NumberValidator[T]) With(next NumberValidator[T]) NumberValidator[T] {
+	return Chain(f, next)
 }
 
 // Required ensures the number is not zero.
-func (nv NumberValidator[T]) Required() NumberValidator[T] {
-	return nv.With(func(ctx context.Context, value T) error {
+func (f NumberValidator[T]) Required() NumberValidator[T] {
+	return f.With(func(ctx context.Context, value T) error {
 		var zero T
 		if value == zero {
 			return NewRuleError(NumberRequired)
@@ -41,8 +41,8 @@ func (nv NumberValidator[T]) Required() NumberValidator[T] {
 }
 
 // Min ensures the number is not less than the given min.
-func (nv NumberValidator[T]) Min(min T) NumberValidator[T] {
-	return nv.With(func(ctx context.Context, value T) error {
+func (f NumberValidator[T]) Min(min T) NumberValidator[T] {
+	return f.With(func(ctx context.Context, value T) error {
 		if value < min {
 			return NewRuleError(NumberMin, min)
 		}
@@ -51,8 +51,8 @@ func (nv NumberValidator[T]) Min(min T) NumberValidator[T] {
 }
 
 // Max ensures the number is not greater than the given max.
-func (nv NumberValidator[T]) Max(max T) NumberValidator[T] {
-	return nv.With(func(ctx context.Context, value T) error {
+func (f NumberValidator[T]) Max(max T) NumberValidator[T] {
+	return f.With(func(ctx context.Context, value T) error {
 		if value > max {
 			return NewRuleError(NumberMax, max)
 		}
@@ -61,8 +61,8 @@ func (nv NumberValidator[T]) Max(max T) NumberValidator[T] {
 }
 
 // In ensures that the provided number is one of the specified options.
-func (nv NumberValidator[T]) In(options ...T) NumberValidator[T] {
-	return nv.With(func(ctx context.Context, value T) error {
+func (f NumberValidator[T]) In(options ...T) NumberValidator[T] {
+	return f.With(func(ctx context.Context, value T) error {
 		ok := funcs.Contains(options, func(opt T) bool { return opt == value })
 		if !ok {
 			return NewRuleError(NumberIn, options)

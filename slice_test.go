@@ -3,9 +3,10 @@ package goval_test
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval/govalregex"
 	"reflect"
 	"testing"
+
+	"github.com/pkg-id/goval/govalregex"
 
 	"github.com/pkg-id/goval"
 )
@@ -44,12 +45,12 @@ func TestSlice(t *testing.T) {
 func SliceValidatorTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Slice[T]().Build(ok).Validate(ctx)
+		err := goval.Slice[T]().Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Slice[T]().Build(fail).Validate(ctx)
+		err = goval.Slice[T]().Validate(ctx, fail)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
@@ -90,12 +91,12 @@ func TestSliceValidator_Required(t *testing.T) {
 func SliceValidatorRequiredTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Slice[T]().Required().Build(ok).Validate(ctx)
+		err := goval.Slice[T]().Required().Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Slice[T]().Required().Build(fail).Validate(ctx)
+		err = goval.Slice[T]().Required().Validate(ctx, fail)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -145,12 +146,12 @@ func TestSliceValidator_Min(t *testing.T) {
 func SliceValidatorMinTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Slice[T]().Min(1).Build(ok).Validate(ctx)
+		err := goval.Slice[T]().Min(1).Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Slice[T]().Min(1).Build(fail).Validate(ctx)
+		err = goval.Slice[T]().Min(1).Validate(ctx, fail)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -201,12 +202,12 @@ func TestSliceValidator_Max(t *testing.T) {
 func SliceValidatorMaxTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Slice[T]().Max(1).Build(ok).Validate(ctx)
+		err := goval.Slice[T]().Max(1).Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Slice[T]().Max(1).Build(fail).Validate(ctx)
+		err = goval.Slice[T]().Max(1).Validate(ctx, fail)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -226,13 +227,13 @@ func SliceValidatorMaxTestFunc[T any, Slice []T](ok, fail Slice) func(t *testing
 func TestSliceValidator_Each(t *testing.T) {
 	ctx := context.Background()
 	val := []string{"ab", "cd", "ef"}
-	err := goval.Slice[string]().Each(goval.String().Min(2)).Build(val).Validate(ctx)
+	err := goval.Slice[string]().Each(goval.String().Min(2)).Validate(ctx, val)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
 	val = []string{"a", "c", "e"}
-	err = goval.Slice[string]().Each(goval.String().Min(2)).Build(val).Validate(ctx)
+	err = goval.Slice[string]().Each(goval.String().Min(2)).Validate(ctx, val)
 	var errs goval.Errors
 	if !errors.As(err, &errs) {
 		t.Fatalf("expect error type: %T; got error type: %T", errs, err)
@@ -274,7 +275,7 @@ func SliceValidatorRequiredBenchmarkFunc[T any, Slice []T](slice Slice) func(b *
 			v := goval.Slice[T, Slice]().Required()
 
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(Slice{}).Validate(ctx)
+				_ = v.Validate(ctx, Slice{})
 			}
 		})
 
@@ -282,7 +283,7 @@ func SliceValidatorRequiredBenchmarkFunc[T any, Slice []T](slice Slice) func(b *
 			v := goval.Slice[T, Slice]().Required()
 
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(slice).Validate(ctx)
+				_ = v.Validate(ctx, slice)
 			}
 		})
 
@@ -310,7 +311,7 @@ func SliceValidatorMinBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 			v := goval.Slice[T, Slice]().Min(n + 1)
 
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(slice).Validate(ctx)
+				_ = v.Validate(ctx, slice)
 			}
 		})
 
@@ -318,7 +319,7 @@ func SliceValidatorMinBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 			v := goval.Slice[T, Slice]().Min(n - 1)
 
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(slice).Validate(ctx)
+				_ = v.Validate(ctx, slice)
 			}
 		})
 
@@ -346,7 +347,7 @@ func SliceValidatorMaxBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 			v := goval.Slice[T, Slice]().Max(n + 1)
 
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(slice).Validate(ctx)
+				_ = v.Validate(ctx, slice)
 			}
 		})
 
@@ -354,7 +355,7 @@ func SliceValidatorMaxBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 			v := goval.Slice[T, Slice]().Max(n - 1)
 
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(slice).Validate(ctx)
+				_ = v.Validate(ctx, slice)
 			}
 		})
 
@@ -362,33 +363,33 @@ func SliceValidatorMaxBenchmarkFunc[T any, Slice []T](slice Slice) func(b *testi
 }
 
 func BenchmarkSliceValidator_Each(b *testing.B) {
-	b.Run("int", SliceValidatorEachBenchmarkFunc[int, []int](
+	b.Run("int", SliceValidatorEachBenchmarkFunc[int](
 		[]int{1, 2, 3},
 		[]int{-2, 0, 4, 5},
 		goval.Number[int]().Min(0).Max(3)))
 
-	b.Run("byte", SliceValidatorEachBenchmarkFunc[byte, []byte](
+	b.Run("byte", SliceValidatorEachBenchmarkFunc[byte](
 		[]byte{0x0, 0x1, 0x2, 0x3},
 		[]byte{0x0, 0x1, 0x4, 0x5},
 		goval.Number[byte]().Min(0x1).Max(0x3)))
 
-	b.Run("string", SliceValidatorEachBenchmarkFunc[string, []string](
+	b.Run("string", SliceValidatorEachBenchmarkFunc[string](
 		[]string{"a", "b", "c", "d"},
 		[]string{"!", "1", "#", "4"},
 		goval.String().Match(govalregex.AlphaNumeric)))
 
-	b.Run("slice", SliceValidatorEachBenchmarkFunc[[]int, [][]int](
+	b.Run("slice", SliceValidatorEachBenchmarkFunc[[]int](
 		[][]int{{1, 2}, {1, 2}},
 		[][]int{{1}, {2}},
 		goval.Slice[int]().Min(2)))
 
-	b.Run("map", SliceValidatorEachBenchmarkFunc[map[int]int, []map[int]int](
+	b.Run("map", SliceValidatorEachBenchmarkFunc[map[int]int](
 		[]map[int]int{{1: 1, 2: 2}, {3: 3, 4: 4}},
 		[]map[int]int{{1: 1}, {2: 2}},
 		goval.Map[int, int]().Min(2)))
 }
 
-func SliceValidatorEachBenchmarkFunc[T any, Slice []T](validSlice Slice, errSlice Slice, validator goval.Builder[T]) func(b *testing.B) {
+func SliceValidatorEachBenchmarkFunc[T any, Slice []T](validSlice Slice, errSlice Slice, validator goval.RuleValidator[T]) func(b *testing.B) {
 	return func(b *testing.B) {
 		ctx := context.Background()
 
@@ -396,13 +397,13 @@ func SliceValidatorEachBenchmarkFunc[T any, Slice []T](validSlice Slice, errSlic
 
 		b.Run("valid slice", func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(validSlice).Validate(ctx)
+				_ = v.Validate(ctx, validSlice)
 			}
 		})
 
 		b.Run("error slice", func(b *testing.B) {
 			for i := 0; i < b.N; i++ {
-				_ = v.Build(errSlice).Validate(ctx)
+				_ = v.Validate(ctx, errSlice)
 			}
 		})
 	}

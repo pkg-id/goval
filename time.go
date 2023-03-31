@@ -10,22 +10,22 @@ type TimeValidator FunctionValidator[time.Time]
 
 // Time returns a TimeValidator with no rules.
 func Time() TimeValidator {
-	return NopFunctionValidator[time.Time]()
+	return NopFunctionValidator[time.Time]
 }
 
-// Build builds the validator chain and attaches the value to it.
-func (tv TimeValidator) Build(value time.Time) Validator {
-	return validatorOf(tv, value)
+// Validate executes the validation rules immediately.
+func (f TimeValidator) Validate(ctx context.Context, value time.Time) error {
+	return validatorOf(f, value).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.
-func (tv TimeValidator) With(next TimeValidator) TimeValidator {
-	return Chain(tv, next)
+func (f TimeValidator) With(next TimeValidator) TimeValidator {
+	return Chain(f, next)
 }
 
 // Required ensures the time is not zero.
-func (tv TimeValidator) Required() TimeValidator {
-	return tv.With(func(ctx context.Context, value time.Time) error {
+func (f TimeValidator) Required() TimeValidator {
+	return f.With(func(ctx context.Context, value time.Time) error {
 		if value.IsZero() {
 			return NewRuleError(TimeRequired)
 		}
@@ -34,8 +34,8 @@ func (tv TimeValidator) Required() TimeValidator {
 }
 
 // Min ensures the time is after min.
-func (tv TimeValidator) Min(min time.Time) TimeValidator {
-	return tv.With(func(ctx context.Context, value time.Time) error {
+func (f TimeValidator) Min(min time.Time) TimeValidator {
+	return f.With(func(ctx context.Context, value time.Time) error {
 		if value.Before(min) {
 			return NewRuleError(TimeMin, min)
 		}
@@ -44,8 +44,8 @@ func (tv TimeValidator) Min(min time.Time) TimeValidator {
 }
 
 // Max ensures the time is before max.
-func (tv TimeValidator) Max(max time.Time) TimeValidator {
-	return tv.With(func(ctx context.Context, value time.Time) error {
+func (f TimeValidator) Max(max time.Time) TimeValidator {
+	return f.With(func(ctx context.Context, value time.Time) error {
 		if value.After(max) {
 			return NewRuleError(TimeMax, max)
 		}

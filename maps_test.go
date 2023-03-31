@@ -11,7 +11,7 @@ import (
 
 func TestMap(t *testing.T) {
 	ctx := context.Background()
-	err := goval.Map[string, string]().Build(nil).Validate(ctx)
+	err := goval.Map[string, string]().Validate(ctx, nil)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -19,7 +19,7 @@ func TestMap(t *testing.T) {
 
 func TestMapValidator_Required(t *testing.T) {
 	ctx := context.Background()
-	err := goval.Map[string, string]().Required().Build(map[string]string{}).Validate(ctx)
+	err := goval.Map[string, string]().Required().Validate(ctx, map[string]string{})
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}
@@ -37,7 +37,7 @@ func TestMapValidator_Required(t *testing.T) {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
 
-	err = goval.Map[string, string]().Required().Build(map[string]string{"key": "value"}).Validate(ctx)
+	err = goval.Map[string, string]().Required().Validate(ctx, map[string]string{"key": "value"})
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -46,7 +46,7 @@ func TestMapValidator_Required(t *testing.T) {
 func TestMapValidator_Min(t *testing.T) {
 	ctx := context.Background()
 	val := map[string]string{"key": "value"}
-	err := goval.Map[string, string]().Min(2).Build(val).Validate(ctx)
+	err := goval.Map[string, string]().Min(2).Validate(ctx, val)
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}
@@ -65,7 +65,7 @@ func TestMapValidator_Min(t *testing.T) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
 
-	err = goval.Map[string, string]().Min(1).Build(val).Validate(ctx)
+	err = goval.Map[string, string]().Min(1).Validate(ctx, val)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -79,7 +79,7 @@ func TestMapValidator_Max(t *testing.T) {
 		"key3": "value3",
 	}
 
-	err := goval.Map[string, string]().Max(2).Build(val).Validate(ctx)
+	err := goval.Map[string, string]().Max(2).Validate(ctx, val)
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}
@@ -98,7 +98,7 @@ func TestMapValidator_Max(t *testing.T) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
 
-	err = goval.Map[string, string]().Max(3).Build(val).Validate(ctx)
+	err = goval.Map[string, string]().Max(3).Validate(ctx, val)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -112,7 +112,7 @@ func TestMapValidator_Each(t *testing.T) {
 	}
 
 	sv := goval.String().Required().Min(2)
-	err := goval.Map[string, string]().Each(sv).Build(val).Validate(ctx)
+	err := goval.Map[string, string]().Each(sv).Validate(ctx, val)
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}

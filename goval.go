@@ -18,6 +18,14 @@ type Validator interface {
 	Validate(ctx context.Context) error
 }
 
+type RuleValidator[T any] interface {
+	Validate(ctx context.Context, value T) error
+}
+
+type RuleValidatorFunc[T any] FunctionValidator[T]
+
+func (f RuleValidatorFunc[T]) Validate(ctx context.Context, value T) error { return f(ctx, value) }
+
 // ValidatorFunc is an adapter for creating an implementation of Validator by using an ordinary function.
 type ValidatorFunc func(ctx context.Context) error
 
@@ -51,27 +59,17 @@ func translateValidatorError(ctx context.Context, err error) error {
 // It is useful as the first rule in the validator chain.
 // Important to note that the Chain function requires at least two functions, by using NopFunctionValidator
 // as the first rule, we ensure that the Chain function will always have at least two functions to chain.
-func NopFunctionValidator[T any]() func(context.Context, T) error {
-	return func(ctx context.Context, t T) error { return nil }
-}
-
-// Builder is an interface that defines the Validator from the ValueValidator.
-// The Builder interface is used to construct the validator that can be used to start the validation process.
-// This Builder acts like a factory for Validator and also as the input supplier for the ValueValidator.
-type Builder[T any] interface {
-	// Build returns a validator that can be used to start the validation process.
-	Build(value T) Validator
-}
-
-// BuilderFunc is an adapter for creating an implementation of Builder by using an ordinary function.
-type BuilderFunc[T any] func(value T) Validator
-
-// Build implements the Builder interface by invoking itself.
-func (f BuilderFunc[T]) Build(value T) Validator { return f(value) }
+func NopFunctionValidator[T any](ctx context.Context, val T) error { return nil }
 
 // FunctionValidator is a signature for a function that validates any value.
 // The context is used to pass additional information to the validator, such as the locale.
 type FunctionValidator[T any] func(ctx context.Context, value T) error
+
+func RuleValidatorToValidatorFactory[T any, factory func(T) Validator](f RuleValidator[T]) factory {
+	return func(val T) Validator {
+		return Bind(val, f)
+	}
+}
 
 // FunctionValidatorConstraint is a set of functions signatures that treats the FunctionValidator.
 type FunctionValidatorConstraint[T any] interface {
@@ -106,9 +104,9 @@ func execChain[T any, Func FunctionValidatorConstraint[T]](ctx context.Context, 
 }
 
 // Named creates a new validator that returns KeyErrors if actual validator returns an error.
-func Named[T any, B Builder[T]](name string, value T, validator B) Validator {
+func Named[T any, F RuleValidator[T]](name string, value T, validator F) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
-		if err := validator.Build(value).Validate(ctx); err != nil {
+		if err := validator.Validate(ctx, value); err != nil {
 			return NewKeyError(name, err)
 		}
 		return nil
@@ -116,11 +114,21 @@ func Named[T any, B Builder[T]](name string, value T, validator B) Validator {
 }
 
 // Each creates a slice validator that validates each element in the slice.
-func Each[T any, V []T](fn func(each T) Validator) Builder[V] {
-	return BuilderFunc[V](func(values V) Validator {
-		return ValidatorFunc(func(ctx context.Context) error {
-			return execute(ctx, funcs.Map(values, fn))
-		})
+func Each[T any, V []T](validator RuleValidator[T]) RuleValidator[V] {
+	return RuleValidatorFunc[V](func(ctx context.Context, values V) error {
+		validators := funcs.Map(values, RuleValidatorToValidatorFactory(validator))
+		return execute(ctx, validators)
+	})
+}
+
+// EachFunc creates a slice validator that validates each element in the slice.
+func EachFunc[T any, V []T](validator RuleValidatorFunc[T]) RuleValidator[V] {
+	return Each[T, V](validator)
+}
+
+func Bind[T any](value T, validator RuleValidator[T]) Validator {
+	return ValidatorFunc(func(ctx context.Context) error {
+		return validator.Validate(ctx, value)
 	})
 }
 
@@ -163,8 +171,8 @@ func validatorReducer(ctx context.Context, internalError chan error) func(errs E
 }
 
 // Use executes the given validator function.
-func Use[T any](fn func(v T) Validator) Builder[T] {
-	return BuilderFunc[T](fn)
+func Use[T any](validator FunctionValidator[T]) RuleValidator[T] {
+	return RuleValidatorFunc[T](validator)
 }
 
 // Pattern is an interface that defines the regular expression pattern.

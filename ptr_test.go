@@ -10,7 +10,7 @@ import (
 
 func TestPtr(t *testing.T) {
 	ctx := context.Background()
-	err := goval.Ptr[string]().Build(nil).Validate(ctx)
+	err := goval.Ptr[string]().Validate(ctx, nil)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -18,7 +18,7 @@ func TestPtr(t *testing.T) {
 
 func TestPtrValidator_Required(t *testing.T) {
 	ctx := context.Background()
-	err := goval.Ptr[string]().Required().Build(nil).Validate(ctx)
+	err := goval.Ptr[string]().Required().Validate(ctx, nil)
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}
@@ -36,7 +36,7 @@ func TestPtrValidator_Required(t *testing.T) {
 		t.Errorf("expect the error args is empty; got error args: %v", exp.Args)
 	}
 
-	err = goval.Ptr[string]().Required().Build(new(string)).Validate(ctx)
+	err = goval.Ptr[string]().Required().Validate(ctx, new(string))
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -45,12 +45,12 @@ func TestPtrValidator_Required(t *testing.T) {
 func TestPtrValidator_Optional(t *testing.T) {
 	ctx := context.Background()
 	sv := goval.String().Required()
-	err := goval.Ptr[string]().Optional(sv).Build(nil).Validate(ctx)
+	err := goval.Ptr[string]().Optional(sv).Validate(ctx, nil)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.Ptr[string]().Optional(sv).Build(new(string)).Validate(ctx)
+	err = goval.Ptr[string]().Optional(sv).Validate(ctx, new(string))
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}
@@ -72,7 +72,7 @@ func TestPtrValidator_Optional(t *testing.T) {
 func TestPtrValidator_Then(t *testing.T) {
 	ctx := context.Background()
 	sv := goval.String().Required()
-	err := goval.Ptr[string]().Then(sv).Build(new(string)).Validate(ctx)
+	err := goval.Ptr[string]().Then(sv).Validate(ctx, new(string))
 	if err == nil {
 		t.Errorf("expect error; got no error")
 	}
@@ -99,14 +99,14 @@ func TestPtrValidator_ThenPanic(t *testing.T) {
 	}()
 
 	sv := goval.String().Required()
-	_ = goval.Ptr[string]().Then(sv).Build(nil).Validate(context.Background())
+	_ = goval.Ptr[string]().Then(sv).Validate(context.Background(), nil)
 }
 
 func BenchmarkPtrValidator_Required(b *testing.B) {
 	b.Run("when rules violated", func(b *testing.B) {
 		ctx := context.Background()
 		for i := 0; i < b.N; i++ {
-			_ = goval.Ptr[int]().Required().Build(nil).Validate(ctx)
+			_ = goval.Ptr[int]().Required().Validate(ctx, nil)
 		}
 	})
 
@@ -114,7 +114,7 @@ func BenchmarkPtrValidator_Required(b *testing.B) {
 		ctx := context.Background()
 		val := 1
 		for i := 0; i < b.N; i++ {
-			_ = goval.Ptr[int]().Required().Build(&val).Validate(ctx)
+			_ = goval.Ptr[int]().Required().Validate(ctx, &val)
 		}
 	})
 }
@@ -123,7 +123,7 @@ func BenchmarkPtrValidator_Optional(b *testing.B) {
 	b.Run("when rules violated", func(b *testing.B) {
 		ctx := context.Background()
 		for i := 0; i < b.N; i++ {
-			_ = goval.Ptr[int]().Optional(goval.Number[int]().Required()).Build(nil).Validate(ctx)
+			_ = goval.Ptr[int]().Optional(goval.Number[int]().Required()).Validate(ctx, nil)
 		}
 	})
 
@@ -131,7 +131,7 @@ func BenchmarkPtrValidator_Optional(b *testing.B) {
 		ctx := context.Background()
 		val := 1
 		for i := 0; i < b.N; i++ {
-			_ = goval.Ptr[int]().Optional(goval.Number[int]().Required()).Build(&val).Validate(ctx)
+			_ = goval.Ptr[int]().Optional(goval.Number[int]().Required()).Validate(ctx, &val)
 		}
 	})
 }
