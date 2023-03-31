@@ -60,9 +60,9 @@ func (f MapValidator[K, V]) Max(max int) MapValidator[K, V] {
 }
 
 // Each ensures each element of the map is satisfied by the given validator.
-func (f MapValidator[K, V]) Each(validator Builder[V]) MapValidator[K, V] {
+func (f MapValidator[K, V]) Each(validator RuleValidator[V]) MapValidator[K, V] {
 	return func(ctx context.Context, values map[K]V) error {
-		validators := funcs.Map(funcs.Values(values), validator.Build)
+		validators := funcs.Map(funcs.Values(values), RuleValidatorToValidatorFactory(validator))
 		return execute(ctx, validators)
 	}
 }

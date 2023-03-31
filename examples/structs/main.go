@@ -16,8 +16,8 @@ type Product struct {
 	OptionIndexes []int             `json:"option_indexes"`
 }
 
-func ProductValidator(p Product) goval.Validator {
-	return goval.ValidatorFunc(func(ctx context.Context) error {
+func ProductValidator() goval.RuleValidatorFunc[Product] {
+	return func(ctx context.Context, p Product) error {
 		return goval.Execute(ctx,
 			goval.Named("id", p.ID, goval.Number[int64]().Required()),
 			goval.Named("price", p.Price, goval.Number[float64]().Required()),
@@ -26,7 +26,7 @@ func ProductValidator(p Product) goval.Validator {
 			goval.Named("customization", p.Customization, goval.Map[string, string]().Required().Each(goval.String().Required())),
 			goval.Named("option_indexes", p.OptionIndexes, goval.Slice[int]().Required().Each(goval.Number[int]().Required().Min(0).Max(5))),
 		)
-	})
+	}
 }
 
 type Order struct {
@@ -49,7 +49,7 @@ func main() {
 		goval.Named("id", order.ID, goval.Number[int64]().Required()),
 		goval.Named("user_id", order.ID, goval.Number[int64]().Required()),
 		goval.Named("coupon", order.Coupon, goval.Ptr[string]().Optional(goval.String().Required().Match(govalregex.AlphaNumeric))),
-		goval.Named("products", order.Products, goval.Each[Product](ProductValidator)),
+		goval.Named("products", order.Products, goval.Each[Product](ProductValidator())),
 	)
 	fmt.Println(err)
 }

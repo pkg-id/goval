@@ -61,9 +61,9 @@ func (f SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 }
 
 // Each ensures each element of the slice is satisfied by the given validator.
-func (f SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
+func (f SliceValidator[T, V]) Each(validator RuleValidator[T]) SliceValidator[T, V] {
 	return func(ctx context.Context, values V) error {
-		validators := funcs.Map(values, validator.Build)
+		validators := funcs.Map(values, RuleValidatorToValidatorFactory(validator))
 		return execute(ctx, validators)
 	}
 }

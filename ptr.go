@@ -35,7 +35,7 @@ func (f PtrValidator[T]) Required() PtrValidator[T] {
 }
 
 // Optional uses the given validator to validate the value if it is not nil.
-func (f PtrValidator[T]) Optional(validator Builder[T]) PtrValidator[T] {
+func (f PtrValidator[T]) Optional(validator RuleValidator[T]) PtrValidator[T] {
 	return f.With(func(ctx context.Context, value *T) error {
 		if value != nil {
 			return f.Then(validator)(ctx, value)
@@ -47,8 +47,8 @@ func (f PtrValidator[T]) Optional(validator Builder[T]) PtrValidator[T] {
 // Then chains the given validator to the current validator.
 // It will be panic if the value of T is nil.
 // Use Optional to optionally validate the value.
-func (f PtrValidator[T]) Then(validator Builder[T]) PtrValidator[T] {
+func (f PtrValidator[T]) Then(validator RuleValidator[T]) PtrValidator[T] {
 	return Chain(f, func(ctx context.Context, value *T) error {
-		return validator.Build(*value).Validate(ctx)
+		return validator.Validate(ctx, *value)
 	})
 }

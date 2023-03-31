@@ -40,7 +40,7 @@ func TestEach(t *testing.T) {
 		ctx := context.Background()
 		val := []string{"a", "bc", "d", "ef"}
 
-		err := goval.Each(goval.String().Required().Min(2).Build).Build(val).Validate(ctx)
+		err := goval.Each[string](goval.String().Required().Min(2)).Validate(ctx, val)
 		var exp goval.Errors
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -55,7 +55,7 @@ func TestEach(t *testing.T) {
 		ctx := context.Background()
 		val := []string{"aa", "bc", "dd", "ef"}
 
-		err := goval.Each(goval.String().Required().Min(2).Build).Build(val).Validate(ctx)
+		err := goval.Each[string](goval.String().Required().Min(2)).Validate(ctx, val)
 		if err != nil {
 			t.Fatalf("expect not error")
 		}
@@ -118,13 +118,11 @@ func TestUse(t *testing.T) {
 		Price float64 `json:"price"`
 	}
 
-	validator := func(p Product) goval.Validator {
-		return goval.ValidatorFunc(func(ctx context.Context) error {
-			return goval.Execute(ctx,
-				goval.Named("id", p.ID, goval.Number[int64]().Required()),
-				goval.Named("price", p.Price, goval.Number[float64]().Required()),
-			)
-		})
+	validator := func(ctx context.Context, p Product) error {
+		return goval.Execute(ctx,
+			goval.Named("id", p.ID, goval.Number[int64]().Required()),
+			goval.Named("price", p.Price, goval.Number[float64]().Required()),
+		)
 	}
 
 	t.Run("when validation fails", func(t *testing.T) {

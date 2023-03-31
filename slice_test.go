@@ -388,7 +388,7 @@ func BenchmarkSliceValidator_Each(b *testing.B) {
 		goval.Map[int, int]().Min(2)))
 }
 
-func SliceValidatorEachBenchmarkFunc[T any, Slice []T](validSlice Slice, errSlice Slice, validator goval.Builder[T]) func(b *testing.B) {
+func SliceValidatorEachBenchmarkFunc[T any, Slice []T](validSlice Slice, errSlice Slice, validator goval.RuleValidator[T]) func(b *testing.B) {
 	return func(b *testing.B) {
 		ctx := context.Background()
 
