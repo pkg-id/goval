@@ -19,15 +19,10 @@ func Number[T NumberConstraint]() NumberValidator[T] {
 	return NopFunctionValidator[T]()
 }
 
-// Build builds the validator chain and attaches the value to it.
-func (f NumberValidator[T]) Build(value T) Validator {
-	return validatorOf(f, value)
-}
-
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f NumberValidator[T]) Validate(ctx context.Context, value T) error {
-	return f.Build(value).Validate(ctx)
+	return validatorOf(f, value).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.

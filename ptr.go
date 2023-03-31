@@ -8,15 +8,10 @@ type PtrValidator[T any] FunctionValidator[*T]
 // Ptr returns a PtrValidator with no rules.
 func Ptr[T any]() PtrValidator[T] { return NopFunctionValidator[*T]() }
 
-// Build builds the validator chain and attaches the value to it.
-func (f PtrValidator[T]) Build(value *T) Validator {
-	return validatorOf(f, value)
-}
-
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f PtrValidator[T]) Validate(ctx context.Context, value *T) error {
-	return f.Build(value).Validate(ctx)
+	return validatorOf(f, value).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.

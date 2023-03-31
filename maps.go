@@ -13,15 +13,10 @@ func Map[K comparable, V any]() MapValidator[K, V] {
 	return NopFunctionValidator[map[K]V]()
 }
 
-// Build builds the validator chain and attaches the value to it.
-func (f MapValidator[K, V]) Build(values map[K]V) Validator {
-	return validatorOf(f, values)
-}
-
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f MapValidator[K, V]) Validate(ctx context.Context, values map[K]V) error {
-	return f.Build(values).Validate(ctx)
+	return validatorOf(f, values).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.

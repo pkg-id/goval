@@ -155,12 +155,6 @@ func TestStringValidator_InFold(t *testing.T) {
 	}
 }
 
-func BenchmarkStringValidator_Build(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_ = goval.String().Build("")
-	}
-}
-
 func BenchmarkStringValidator_Required(b *testing.B) {
 	ctx := context.Background()
 

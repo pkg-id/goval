@@ -67,8 +67,8 @@ func TestExecute(t *testing.T) {
 		ctx := context.Background()
 
 		err := goval.Execute(ctx,
-			goval.String().Required().Min(2).Build("a"),
-			goval.Number[int]().Required().Min(8).Build(7),
+			goval.Bind[string]("a", goval.String().Required().Min(2)),
+			goval.Bind[int](7, goval.Number[int]().Required().Min(8)),
 		)
 		var exp goval.Errors
 		if !errors.As(err, &exp) {
@@ -84,8 +84,8 @@ func TestExecute(t *testing.T) {
 		ctx := context.Background()
 
 		err := goval.Execute(ctx,
-			goval.String().Required().Min(2).Build("ab"),
-			goval.Number[int]().Required().Min(8).Build(8),
+			goval.Bind[string]("ab", goval.String().Required().Min(2)),
+			goval.Bind[int](8, goval.Number[int]().Required().Min(8)),
 		)
 		if err != nil {
 			t.Fatalf("expect not error")
@@ -101,8 +101,8 @@ func TestExecute(t *testing.T) {
 		}
 
 		err := goval.Execute(ctx,
-			goval.String().Required().Min(2).Build("a"),
-			goval.Number[int]().Required().With(customValidator).Build(8),
+			goval.Bind[string]("a", goval.String().Required().Min(2)),
+			goval.Bind[int](8, goval.Number[int]().Required().With(customValidator)),
 		)
 
 		if err != internalError {

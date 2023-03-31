@@ -40,20 +40,6 @@ func validatorOf[T any](fn func(ctx context.Context, value T) error, value T) Va
 	})
 }
 
-// Builder is an interface that defines the Validator from the ValueValidator.
-// The Builder interface is used to construct the validator that can be used to start the validation process.
-// This Builder acts like a factory for Validator and also as the input supplier for the ValueValidator.
-type Builder[T any] interface {
-	// Build returns a validator that can be used to start the validation process.
-	Build(value T) Validator
-}
-
-// BuilderFunc is an adapter for creating an implementation of Builder by using an ordinary function.
-type BuilderFunc[T any] func(value T) Validator
-
-// Build implements the Builder interface by invoking itself.
-func (f BuilderFunc[T]) Build(value T) Validator { return f(value) }
-
 // translateValidatorError translates the error if it is a RuleError.
 // Otherwise, it returns the error as is.
 func translateValidatorError(ctx context.Context, err error) error {
@@ -136,6 +122,12 @@ func Each[T any, V []T](validator RuleValidator[T]) RuleValidator[V] {
 	return RuleValidatorFunc[V](func(ctx context.Context, values V) error {
 		validators := funcs.Map(values, RuleValidatorToValidatorFactory(validator))
 		return execute(ctx, validators)
+	})
+}
+
+func Bind[T any](value T, validator RuleValidator[T]) Validator {
+	return ValidatorFunc(func(ctx context.Context) error {
+		return validator.Validate(ctx, value)
 	})
 }
 

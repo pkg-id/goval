@@ -14,15 +14,10 @@ func Slice[T any, V []T]() SliceValidator[T, V] {
 	return NopFunctionValidator[V]()
 }
 
-// Build builds the validator chain and attaches the value to it.
-func (f SliceValidator[T, V]) Build(values V) Validator {
-	return validatorOf(f, values)
-}
-
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f SliceValidator[T, V]) Validate(ctx context.Context, values V) error {
-	return f.Build(values).Validate(ctx)
+	return validatorOf(f, values).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.
