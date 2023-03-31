@@ -20,7 +20,6 @@ func Number[T NumberConstraint]() NumberValidator[T] {
 }
 
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f NumberValidator[T]) Validate(ctx context.Context, value T) error {
 	return validatorOf(f, value).Validate(ctx)
 }

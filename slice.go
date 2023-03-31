@@ -15,7 +15,6 @@ func Slice[T any, V []T]() SliceValidator[T, V] {
 }
 
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f SliceValidator[T, V]) Validate(ctx context.Context, values V) error {
 	return validatorOf(f, values).Validate(ctx)
 }

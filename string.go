@@ -15,7 +15,6 @@ func String() StringValidator {
 }
 
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f StringValidator) Validate(ctx context.Context, value string) error {
 	return validatorOf(f, value).Validate(ctx)
 }

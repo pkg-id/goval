@@ -14,7 +14,6 @@ func Map[K comparable, V any]() MapValidator[K, V] {
 }
 
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f MapValidator[K, V]) Validate(ctx context.Context, values map[K]V) error {
 	return validatorOf(f, values).Validate(ctx)
 }

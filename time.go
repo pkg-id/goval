@@ -14,7 +14,6 @@ func Time() TimeValidator {
 }
 
 // Validate executes the validation rules immediately.
-// The Validate itself is basically a syntactic sugar for Bind(value).Validate(ctx).
 func (f TimeValidator) Validate(ctx context.Context, value time.Time) error {
 	return validatorOf(f, value).Validate(ctx)
 }
