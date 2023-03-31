@@ -61,3 +61,8 @@ func (f SliceValidator[T, V]) Each(validator RuleValidator[T]) SliceValidator[T,
 		return execute(ctx, validators)
 	})
 }
+
+// EachFunc ensures each element of the slice is satisfied by the given validator.
+func (f SliceValidator[T, V]) EachFunc(validator RuleValidatorFunc[T]) SliceValidator[T, V] {
+	return f.Each(validator)
+}
