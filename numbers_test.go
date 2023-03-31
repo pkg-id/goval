@@ -29,12 +29,12 @@ func TestNumber(t *testing.T) {
 func NumberValidatorTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Number[T]().Build(ok).Validate(ctx)
+		err := goval.Number[T]().Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Number[T]().Build(fail).Validate(ctx)
+		err = goval.Number[T]().Validate(ctx, fail)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
@@ -61,12 +61,12 @@ func TestNilValidator_Required(t *testing.T) {
 func NumberValidatorRequiredTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Number[T]().Required().Build(ok).Validate(ctx)
+		err := goval.Number[T]().Required().Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Number[T]().Required().Build(fail).Validate(ctx)
+		err = goval.Number[T]().Required().Validate(ctx, fail)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -102,12 +102,12 @@ func TestNumberValidator_Min(t *testing.T) {
 func NumberValidatorMinTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Number[T]().Min(3).Build(ok).Validate(ctx)
+		err := goval.Number[T]().Min(3).Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Number[T]().Min(3).Build(fail).Validate(ctx)
+		err = goval.Number[T]().Min(3).Validate(ctx, fail)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -144,12 +144,12 @@ func TestNumberValidator_Max(t *testing.T) {
 func NumberValidatorMaxTestFunc[T goval.NumberConstraint](ok, fail T) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Number[T]().Max(3).Build(ok).Validate(ctx)
+		err := goval.Number[T]().Max(3).Validate(ctx, ok)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Number[T]().Max(3).Build(fail).Validate(ctx)
+		err = goval.Number[T]().Max(3).Validate(ctx, fail)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -186,12 +186,12 @@ func TestNumberValidator_In(t *testing.T) {
 func NumberValidatorInTestFunc[T goval.NumberConstraint, V []T](num T, ok V, fail V) func(t *testing.T) {
 	return func(t *testing.T) {
 		ctx := context.Background()
-		err := goval.Number[T]().In(ok...).Build(num).Validate(ctx)
+		err := goval.Number[T]().In(ok...).Validate(ctx, num)
 		if err != nil {
 			t.Errorf("expect no error; got error: %v", err)
 		}
 
-		err = goval.Number[T]().In(fail...).Build(num).Validate(ctx)
+		err = goval.Number[T]().In(fail...).Validate(ctx, num)
 		var exp *goval.RuleError
 		if !errors.As(err, &exp) {
 			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -213,7 +213,7 @@ func BenchmarkNumberValidator_Required(b *testing.B) {
 		ctx := context.Background()
 		val := 0
 		for i := 0; i < b.N; i++ {
-			_ = goval.Number[int]().Required().Build(val).Validate(ctx)
+			_ = goval.Number[int]().Required().Validate(ctx, val)
 		}
 	})
 
@@ -221,7 +221,7 @@ func BenchmarkNumberValidator_Required(b *testing.B) {
 		ctx := context.Background()
 		val := 1
 		for i := 0; i < b.N; i++ {
-			_ = goval.Number[int]().Required().Build(val).Validate(ctx)
+			_ = goval.Number[int]().Required().Validate(ctx, val)
 		}
 	})
 }
@@ -231,7 +231,7 @@ func BenchmarkNumberValidator_Min(b *testing.B) {
 		ctx := context.Background()
 		val := 9
 		for i := 0; i < b.N; i++ {
-			_ = goval.Number[int]().Min(10).Build(val).Validate(ctx)
+			_ = goval.Number[int]().Min(10).Validate(ctx, val)
 		}
 	})
 
@@ -239,7 +239,7 @@ func BenchmarkNumberValidator_Min(b *testing.B) {
 		ctx := context.Background()
 		val := 9
 		for i := 0; i < b.N; i++ {
-			_ = goval.Number[int]().Min(9).Build(val).Validate(ctx)
+			_ = goval.Number[int]().Min(9).Validate(ctx, val)
 		}
 	})
 }
@@ -249,7 +249,7 @@ func BenchmarkNumberValidator_Max(b *testing.B) {
 		ctx := context.Background()
 		val := 9
 		for i := 0; i < b.N; i++ {
-			_ = goval.Number[int]().Min(8).Build(val).Validate(ctx)
+			_ = goval.Number[int]().Min(8).Validate(ctx, val)
 		}
 	})
 
@@ -257,7 +257,7 @@ func BenchmarkNumberValidator_Max(b *testing.B) {
 		ctx := context.Background()
 		val := 9
 		for i := 0; i < b.N; i++ {
-			_ = goval.Number[int]().Max(9).Build(val).Validate(ctx)
+			_ = goval.Number[int]().Max(9).Validate(ctx, val)
 		}
 	})
 }

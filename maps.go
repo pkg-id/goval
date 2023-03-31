@@ -18,6 +18,12 @@ func (f MapValidator[K, V]) Build(values map[K]V) Validator {
 	return validatorOf(f, values)
 }
 
+// Validate executes the validation rules immediately.
+// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+func (f MapValidator[K, V]) Validate(ctx context.Context, values map[K]V) error {
+	return f.Build(values).Validate(ctx)
+}
+
 // With attaches the next rule to the chain.
 func (f MapValidator[K, V]) With(next MapValidator[K, V]) MapValidator[K, V] {
 	return Chain(f, next)

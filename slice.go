@@ -19,6 +19,12 @@ func (f SliceValidator[T, V]) Build(values V) Validator {
 	return validatorOf(f, values)
 }
 
+// Validate executes the validation rules immediately.
+// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+func (f SliceValidator[T, V]) Validate(ctx context.Context, values V) error {
+	return f.Build(values).Validate(ctx)
+}
+
 // With attaches the next rule to the chain.
 func (f SliceValidator[T, V]) With(next SliceValidator[T, V]) SliceValidator[T, V] {
 	return Chain(f, next)

@@ -12,7 +12,7 @@ import (
 
 func TestString(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().Build("").Validate(ctx)
+	err := goval.String().Validate(ctx, "")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -20,12 +20,12 @@ func TestString(t *testing.T) {
 
 func TestStringValidator_Required(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().Required().Build("abc").Validate(ctx)
+	err := goval.String().Required().Validate(ctx, "abc")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().Required().Build("").Validate(ctx)
+	err = goval.String().Required().Validate(ctx, "")
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -42,12 +42,12 @@ func TestStringValidator_Required(t *testing.T) {
 
 func TestStringValidator_Min(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().Min(3).Build("abc").Validate(ctx)
+	err := goval.String().Min(3).Validate(ctx, "abc")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().Min(3).Build("ab").Validate(ctx)
+	err = goval.String().Min(3).Validate(ctx, "ab")
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -65,12 +65,12 @@ func TestStringValidator_Min(t *testing.T) {
 
 func TestStringValidator_Max(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().Max(3).Build("abc").Validate(ctx)
+	err := goval.String().Max(3).Validate(ctx, "abc")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().Max(2).Build("abc").Validate(ctx)
+	err = goval.String().Max(2).Validate(ctx, "abc")
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -88,12 +88,12 @@ func TestStringValidator_Max(t *testing.T) {
 
 func TestStringValidator_Match(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().Match(govalregex.AlphaNumeric).Build("abc123").Validate(ctx)
+	err := goval.String().Match(govalregex.AlphaNumeric).Validate(ctx, "abc123")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().Match(govalregex.AlphaNumeric).Build("abc??").Validate(ctx)
+	err = goval.String().Match(govalregex.AlphaNumeric).Validate(ctx, "abc??")
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -111,12 +111,12 @@ func TestStringValidator_Match(t *testing.T) {
 
 func TestStringValidator_In(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().In("a", "b", "c").Build("a").Validate(ctx)
+	err := goval.String().In("a", "b", "c").Validate(ctx, "a")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().In("a", "b", "c").Build("A").Validate(ctx)
+	err = goval.String().In("a", "b", "c").Validate(ctx, "A")
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -134,12 +134,12 @@ func TestStringValidator_In(t *testing.T) {
 
 func TestStringValidator_InFold(t *testing.T) {
 	ctx := context.Background()
-	err := goval.String().InFold("a", "b", "c").Build("C").Validate(ctx)
+	err := goval.String().InFold("a", "b", "c").Validate(ctx, "C")
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.String().InFold("a", "b", "c").Build("Z").Validate(ctx)
+	err = goval.String().InFold("a", "b", "c").Validate(ctx, "Z")
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -167,13 +167,13 @@ func BenchmarkStringValidator_Required(b *testing.B) {
 	v := goval.String().Required()
 	b.Run("benchmark without value", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = v.Build("").Validate(ctx)
+			_ = v.Validate(ctx, "")
 		}
 	})
 
 	b.Run("benchmark with value", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = v.Build("random").Validate(ctx)
+			_ = v.Validate(ctx, "random")
 		}
 	})
 }
@@ -184,13 +184,13 @@ func BenchmarkStringValidator_Min(b *testing.B) {
 
 	b.Run("with value under minimum character", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = v.Build("1234").Validate(ctx)
+			_ = v.Validate(ctx, "1234")
 		}
 	})
 
 	b.Run("with value above minimum character", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = v.Build("123456").Validate(ctx)
+			_ = v.Validate(ctx, "123456")
 		}
 	})
 }
@@ -201,13 +201,13 @@ func BenchmarkStringValidator_Max(b *testing.B) {
 
 	b.Run("with value above maximum character", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = v.Build("123456").Validate(ctx)
+			_ = v.Validate(ctx, "123456")
 		}
 	})
 
 	b.Run("with value under maximum character", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = v.Build("1234").Validate(ctx)
+			_ = v.Validate(ctx, "1234")
 		}
 	})
 }
@@ -223,25 +223,25 @@ func BenchmarkStringValidator_Match(b *testing.B) {
 
 	b.Run("email regex validation with valid email", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = emailValidator.Build("email@example.com").Validate(ctx)
+			_ = emailValidator.Validate(ctx, "email@example.com")
 		}
 	})
 
 	b.Run("email regex validation with invalid email", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = emailValidator.Build("emailexample.com").Validate(ctx)
+			_ = emailValidator.Validate(ctx, "emailexample.com")
 		}
 	})
 
 	b.Run("ip address regex validation with valid ip", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = ipValidator.Build("127.0.0.1").Validate(ctx)
+			_ = ipValidator.Validate(ctx, "127.0.0.1")
 		}
 	})
 
 	b.Run("ip address regex validation with invalid ip", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			_ = ipValidator.Build("a.b.c.d").Validate(ctx)
+			_ = ipValidator.Validate(ctx, "a.b.c.d")
 		}
 	})
 

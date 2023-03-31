@@ -18,6 +18,10 @@ type Validator interface {
 	Validate(ctx context.Context) error
 }
 
+type RuleValidator[T any] interface {
+	Validate(ctx context.Context, value T) error
+}
+
 // ValidatorFunc is an adapter for creating an implementation of Validator by using an ordinary function.
 type ValidatorFunc func(ctx context.Context) error
 

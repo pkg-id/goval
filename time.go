@@ -18,6 +18,12 @@ func (f TimeValidator) Build(value time.Time) Validator {
 	return validatorOf(f, value)
 }
 
+// Validate executes the validation rules immediately.
+// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+func (f TimeValidator) Validate(ctx context.Context, value time.Time) error {
+	return f.Build(value).Validate(ctx)
+}
+
 // With attaches the next rule to the chain.
 func (f TimeValidator) With(next TimeValidator) TimeValidator {
 	return Chain(f, next)

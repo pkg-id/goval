@@ -24,6 +24,12 @@ func (f NumberValidator[T]) Build(value T) Validator {
 	return validatorOf(f, value)
 }
 
+// Validate executes the validation rules immediately.
+// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+func (f NumberValidator[T]) Validate(ctx context.Context, value T) error {
+	return f.Build(value).Validate(ctx)
+}
+
 // With attaches the next rule to the chain.
 func (f NumberValidator[T]) With(next NumberValidator[T]) NumberValidator[T] {
 	return Chain(f, next)

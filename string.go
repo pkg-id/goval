@@ -19,6 +19,12 @@ func (f StringValidator) Build(value string) Validator {
 	return validatorOf(f, value)
 }
 
+// Validate executes the validation rules immediately.
+// The Validate itself is basically a syntactic sugar for Build(value).Validate(ctx).
+func (f StringValidator) Validate(ctx context.Context, value string) error {
+	return f.Build(value).Validate(ctx)
+}
+
 // With attaches the next rule to the chain.
 func (f StringValidator) With(next StringValidator) StringValidator {
 	return Chain(f, next)

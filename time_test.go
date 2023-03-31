@@ -11,7 +11,7 @@ import (
 
 func TestTime(t *testing.T) {
 	ctx := context.Background()
-	err := goval.Time().Build(time.Now()).Validate(ctx)
+	err := goval.Time().Validate(ctx, time.Now())
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
@@ -19,12 +19,12 @@ func TestTime(t *testing.T) {
 
 func TestTimeValidator_Required(t *testing.T) {
 	ctx := context.Background()
-	err := goval.Time().Required().Build(time.Now()).Validate(ctx)
+	err := goval.Time().Required().Validate(ctx, time.Now())
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.Time().Required().Build(time.Time{}).Validate(ctx)
+	err = goval.Time().Required().Validate(ctx, time.Time{})
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -44,12 +44,12 @@ func TestTimeValidator_Min(t *testing.T) {
 	tNow := time.Date(2022, 01, 02, 0, 0, 0, 0, time.UTC)
 	tMin := time.Date(2022, 01, 01, 0, 0, 0, 0, time.UTC)
 
-	err := goval.Time().Min(tMin).Build(tNow).Validate(ctx)
+	err := goval.Time().Min(tMin).Validate(ctx, tNow)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.Time().Min(tNow).Build(tMin).Validate(ctx)
+	err = goval.Time().Min(tNow).Validate(ctx, tMin)
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
@@ -70,12 +70,12 @@ func TestTimeValidator_Max(t *testing.T) {
 	tNow := time.Date(2022, 01, 01, 0, 0, 0, 0, time.UTC)
 	tMax := time.Date(2022, 01, 02, 0, 0, 0, 0, time.UTC)
 
-	err := goval.Time().Max(tMax).Build(tNow).Validate(ctx)
+	err := goval.Time().Max(tMax).Validate(ctx, tMax)
 	if err != nil {
 		t.Errorf("expect no error; got error: %v", err)
 	}
 
-	err = goval.Time().Max(tNow).Build(tMax).Validate(ctx)
+	err = goval.Time().Max(tNow).Validate(ctx, tMax)
 	var exp *goval.RuleError
 	if !errors.As(err, &exp) {
 		t.Fatalf("expect error type: %T; got error type: %T", exp, err)
