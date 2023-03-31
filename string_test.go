@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/pkg-id/goval"
@@ -106,6 +107,18 @@ func TestStringValidator_Match(t *testing.T) {
 	args := []any{govalregex.AlphaNumeric.RegExp().String()}
 	if !reflect.DeepEqual(exp.Args, args) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
+	}
+
+	panicRegex := govalregex.NewLazy("[")
+	panicValidator := goval.String().Match(panicRegex)
+
+	err = goval.Execute(ctx, goval.Bind[string]("a", panicValidator))
+	if err == nil {
+		t.Errorf("expect panic error; got nil")
+	}
+
+	if !strings.HasPrefix(err.Error(), "panic") {
+		t.Errorf("expect error panic; got %v", err)
 	}
 }
 
