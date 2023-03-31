@@ -11,6 +11,7 @@ import (
 	"io/fs"
 	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 )
 
@@ -118,6 +119,13 @@ type Translator struct {
 	bundle Bundle
 }
 
+var bufferPool = sync.Pool{
+	New: func() any {
+		return new(bytes.Buffer)
+	},
+}
+var tplCache = sync.Map{}
+
 func NewTranslator(opts ...Option) goval.ErrorTranslator {
 	t := Translator{
 		tpl:    template.New("translator"),
@@ -131,28 +139,48 @@ func NewTranslator(opts ...Option) goval.ErrorTranslator {
 	return &t
 }
 
-func (t *Translator) translate(ctx context.Context, err *goval.RuleError, key string) error {
+func (t *Translator) translate(ctx context.Context, ruleErr *goval.RuleError, key string) error {
+	var (
+		err    error
+		ok     bool
+		tplTmp any
+	)
+
 	if len(t.bundle) == 0 {
 		return ErrBundleIsNoSet
 	}
 
-	dict, ok := t.bundle[LanguageFromContext(ctx, "en")]
+	lang := LanguageFromContext(ctx, "en")
+
+	tplTmp, ok = tplCache.Load(lang + key)
 	if !ok {
-		return ErrLanguageDictionaryIsNotFound
+		dict, ok := t.bundle[lang]
+		if !ok {
+			return ErrLanguageDictionaryIsNotFound
+		}
+
+		textTemplate, ok := dict[key]
+		if !ok {
+			return ErrLanguageKeyIsNotFound
+		}
+
+		tplTmp, err = t.tpl.Parse(textTemplate)
+		if err != nil {
+			return goval.TextError(err.Error())
+		}
+
+		tplCache.Store(lang+key, tplTmp)
 	}
 
-	textTemplate, ok := dict[key]
-	if !ok {
-		return ErrLanguageKeyIsNotFound
-	}
+	tpl := tplTmp.(*template.Template)
 
-	tpl, errParse := t.tpl.Parse(textTemplate)
-	if errParse != nil {
-		return goval.TextError(errParse.Error())
-	}
+	buff := bufferPool.Get().(*bytes.Buffer)
+	defer func() {
+		buff.Reset()
+		bufferPool.Put(buff)
+	}()
 
-	buff := bytes.Buffer{}
-	if err := tpl.Execute(&buff, err); err != nil {
+	if err := tpl.Execute(buff, ruleErr); err != nil {
 		return goval.TextError(err.Error())
 	}
 
