@@ -15,18 +15,18 @@ func String() StringValidator {
 }
 
 // Build builds the validator chain and attaches the value to it.
-func (sv StringValidator) Build(value string) Validator {
-	return validatorOf(sv, value)
+func (f StringValidator) Build(value string) Validator {
+	return validatorOf(f, value)
 }
 
 // With attaches the next rule to the chain.
-func (sv StringValidator) With(next StringValidator) StringValidator {
-	return Chain(sv, next)
+func (f StringValidator) With(next StringValidator) StringValidator {
+	return Chain(f, next)
 }
 
 // Required ensures the string is not empty.
-func (sv StringValidator) Required() StringValidator {
-	return sv.With(func(ctx context.Context, value string) error {
+func (f StringValidator) Required() StringValidator {
+	return f.With(func(ctx context.Context, value string) error {
 		if value == "" {
 			return NewRuleError(StringRequired)
 		}
@@ -35,8 +35,8 @@ func (sv StringValidator) Required() StringValidator {
 }
 
 // Min ensures the length of the string is not less than the given length.
-func (sv StringValidator) Min(length int) StringValidator {
-	return sv.With(func(ctx context.Context, value string) error {
+func (f StringValidator) Min(length int) StringValidator {
+	return f.With(func(ctx context.Context, value string) error {
 		if len(value) < length {
 			return NewRuleError(StringMin, length)
 		}
@@ -45,8 +45,8 @@ func (sv StringValidator) Min(length int) StringValidator {
 }
 
 // Max ensures the length of the string is not greater than the given length.
-func (sv StringValidator) Max(length int) StringValidator {
-	return sv.With(func(ctx context.Context, value string) error {
+func (f StringValidator) Max(length int) StringValidator {
+	return f.With(func(ctx context.Context, value string) error {
 		if len(value) > length {
 			return NewRuleError(StringMax, length)
 		}
@@ -55,8 +55,8 @@ func (sv StringValidator) Max(length int) StringValidator {
 }
 
 // Match ensures the string matches the given pattern.
-func (sv StringValidator) Match(pattern Pattern) StringValidator {
-	return sv.With(func(ctx context.Context, value string) error {
+func (f StringValidator) Match(pattern Pattern) StringValidator {
+	return f.With(func(ctx context.Context, value string) error {
 		exp := pattern.RegExp()
 		if !exp.MatchString(value) {
 			return NewRuleError(StringMatch, exp.String())
@@ -67,8 +67,8 @@ func (sv StringValidator) Match(pattern Pattern) StringValidator {
 
 // In ensures that the provided string is one of the specified options.
 // This validation is case-sensitive, use InFold to perform a case-insensitive In validation.
-func (sv StringValidator) In(options ...string) StringValidator {
-	return sv.With(func(ctx context.Context, value string) error {
+func (f StringValidator) In(options ...string) StringValidator {
+	return f.With(func(ctx context.Context, value string) error {
 		ok := funcs.Contains(options, func(opt string) bool { return value == opt })
 		if !ok {
 			return NewRuleError(StringIn, options)
@@ -78,8 +78,8 @@ func (sv StringValidator) In(options ...string) StringValidator {
 }
 
 // InFold ensures that the provided string is one of the specified options with case-insensitivity.
-func (sv StringValidator) InFold(options ...string) StringValidator {
-	return sv.With(func(ctx context.Context, value string) error {
+func (f StringValidator) InFold(options ...string) StringValidator {
+	return f.With(func(ctx context.Context, value string) error {
 		ok := funcs.Contains(options, func(opt string) bool { return strings.EqualFold(value, opt) })
 		if !ok {
 			return NewRuleError(StringInFold, options)

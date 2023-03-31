@@ -15,18 +15,18 @@ func Slice[T any, V []T]() SliceValidator[T, V] {
 }
 
 // Build builds the validator chain and attaches the value to it.
-func (sv SliceValidator[T, V]) Build(values V) Validator {
-	return validatorOf(sv, values)
+func (f SliceValidator[T, V]) Build(values V) Validator {
+	return validatorOf(f, values)
 }
 
 // With attaches the next rule to the chain.
-func (sv SliceValidator[T, V]) With(next SliceValidator[T, V]) SliceValidator[T, V] {
-	return Chain(sv, next)
+func (f SliceValidator[T, V]) With(next SliceValidator[T, V]) SliceValidator[T, V] {
+	return Chain(f, next)
 }
 
 // Required ensures the slice is not empty.
-func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
-	return sv.With(func(ctx context.Context, values V) error {
+func (f SliceValidator[T, V]) Required() SliceValidator[T, V] {
+	return f.With(func(ctx context.Context, values V) error {
 		if len(values) == 0 {
 			return NewRuleError(SliceRequired)
 		}
@@ -35,8 +35,8 @@ func (sv SliceValidator[T, V]) Required() SliceValidator[T, V] {
 }
 
 // Min ensures the length of the slice is not less than the given min.
-func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
-	return sv.With(func(ctx context.Context, values V) error {
+func (f SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
+	return f.With(func(ctx context.Context, values V) error {
 		if len(values) < min {
 			return NewRuleError(SliceMin, min)
 		}
@@ -45,8 +45,8 @@ func (sv SliceValidator[T, V]) Min(min int) SliceValidator[T, V] {
 }
 
 // Max ensures the length of the slice is not greater than the given max.
-func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
-	return sv.With(func(ctx context.Context, values V) error {
+func (f SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
+	return f.With(func(ctx context.Context, values V) error {
 		if len(values) > max {
 			return NewRuleError(SliceMax, max)
 		}
@@ -55,7 +55,7 @@ func (sv SliceValidator[T, V]) Max(max int) SliceValidator[T, V] {
 }
 
 // Each ensures each element of the slice is satisfied by the given validator.
-func (sv SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
+func (f SliceValidator[T, V]) Each(validator Builder[T]) SliceValidator[T, V] {
 	return func(ctx context.Context, values V) error {
 		validators := funcs.Map(values, validator.Build)
 		return execute(ctx, validators)
