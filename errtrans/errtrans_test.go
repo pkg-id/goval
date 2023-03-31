@@ -19,14 +19,11 @@ func TestTranslator_Translate(t *testing.T) {
 	tr := NewTranslator(WithBundle(bundle))
 
 	t.Run("when validation ok", func(t *testing.T) {
-		ruleErr := &goval.RuleError{
-			Code: goval.NumberRequired,
-			Args: nil,
-		}
+		ruleErr := goval.NewRuleError(goval.NumberRequired)
 
 		err := tr.Translate(ctx, ruleErr)
 		if err == nil {
-			t.Errorf("expect error; got nil")
+			t.Fatalf("expect error; got nil")
 		}
 
 		if err.Error() != "This field is required." {
@@ -44,10 +41,7 @@ func TestTranslator_Translate(t *testing.T) {
 	})
 
 	t.Run("when use invalid language key", func(t *testing.T) {
-		ruleErr := &goval.RuleError{
-			Code: goval.NumberRequired,
-			Args: nil,
-		}
+		ruleErr := goval.NewRuleError(goval.NumberRequired)
 
 		ctx := ContextWithLanguage(ctx, "es")
 
@@ -59,10 +53,7 @@ func TestTranslator_Translate(t *testing.T) {
 
 	tr = NewTranslator()
 	t.Run("when use without bundle", func(t *testing.T) {
-		ruleErr := &goval.RuleError{
-			Code: goval.NumberRequired,
-			Args: nil,
-		}
+		ruleErr := goval.NewRuleError(goval.NumberRequired)
 
 		err := tr.Translate(ctx, ruleErr)
 		if err != ErrBundleIsNoSet {
