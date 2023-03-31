@@ -3,7 +3,7 @@ package govalregex
 import "testing"
 
 func TestLazyCompiler_RegExp(t *testing.T) {
-	re := NewLazy(`^[a-z]+$`)
+	re := Compile(`^[a-z]+$`)
 	if re.compiled != nil {
 		t.Errorf("expect no value until first request is created")
 	}

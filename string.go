@@ -2,6 +2,7 @@ package goval
 
 import (
 	"context"
+	"fmt"
 	"github.com/pkg-id/goval/funcs"
 	"strings"
 )
@@ -55,13 +56,21 @@ func (f StringValidator) Max(length int) StringValidator {
 }
 
 // Match ensures the string matches the given pattern.
+// If pattern cause panic, will be recovered.
 func (f StringValidator) Match(pattern Pattern) StringValidator {
-	return f.With(func(ctx context.Context, value string) error {
+	return f.With(func(ctx context.Context, value string) (err error) {
+		defer func() {
+			if rec := recover(); rec != nil {
+				err = fmt.Errorf("panic: %v", rec)
+			}
+		}()
+
 		exp := pattern.RegExp()
 		if !exp.MatchString(value) {
 			return NewRuleError(StringMatch, exp.String())
 		}
-		return nil
+
+		return err
 	})
 }
 

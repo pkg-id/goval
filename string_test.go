@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/pkg-id/goval"
@@ -107,6 +108,18 @@ func TestStringValidator_Match(t *testing.T) {
 	if !reflect.DeepEqual(exp.Args, args) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
+
+	panicRegex := govalregex.Compile("[")
+	panicValidator := goval.String().Match(panicRegex)
+
+	err = goval.Execute(ctx, goval.Bind[string]("a", panicValidator))
+	if err == nil {
+		t.Errorf("expect panic error; got nil")
+	}
+
+	if !strings.HasPrefix(err.Error(), "panic") {
+		t.Errorf("expect error panic; got %v", err)
+	}
 }
 
 func TestStringValidator_In(t *testing.T) {
@@ -209,8 +222,8 @@ func BenchmarkStringValidator_Max(b *testing.B) {
 func BenchmarkStringValidator_Match(b *testing.B) {
 	ctx := context.Background()
 
-	emailRegex := govalregex.NewLazy("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-	ipRegex := govalregex.NewLazy("(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))")
+	emailRegex := govalregex.Compile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
+	ipRegex := govalregex.Compile("(?:(?:2(?:[0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9])\\.){3}(?:(?:2([0-4][0-9]|5[0-5])|[0-1]?[0-9]?[0-9]))")
 
 	emailValidator := goval.String().Match(emailRegex)
 	ipValidator := goval.String().Match(ipRegex)
