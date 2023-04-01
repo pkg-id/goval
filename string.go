@@ -103,10 +103,10 @@ func (f StringValidator) InFold(options ...string) StringValidator {
 // result of the chainer function is added to the chain, and the input value is
 // validated using the new chain. If the predicate returns false, the original
 // chain is returned without modification, and the input value is not validated.
-func (f StringValidator) When(p Predicate[string], chainer func(chain StringValidator) StringValidator) StringValidator {
+func (f StringValidator) When(p Predicate[string], l Linker[string, StringValidator]) StringValidator {
 	return func(ctx context.Context, val string) error {
 		if p.OK(val) {
-			return chainer(f).Validate(ctx, val)
+			return l.Link(f).Validate(ctx, val)
 		}
 		return f.Validate(ctx, val)
 	}

@@ -184,3 +184,7 @@ type Pattern interface {
 type Predicate[T any] func(v T) bool
 
 func (f Predicate[T]) OK(v T) bool { return f(v) }
+
+type Linker[T any, F FunctionValidatorConstraint[T]] func(f F) F
+
+func (f Linker[T, F]) Link(g F) F { return f(g) }

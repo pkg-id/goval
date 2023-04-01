@@ -59,10 +59,10 @@ func (f TimeValidator) Max(max time.Time) TimeValidator {
 // result of the chainer function is added to the chain, and the input value is
 // validated using the new chain. If the predicate returns false, the original
 // chain is returned without modification, and the input value is not validated.
-func (f TimeValidator) When(p Predicate[time.Time], chainer func(chain TimeValidator) TimeValidator) TimeValidator {
+func (f TimeValidator) When(p Predicate[time.Time], l Linker[time.Time, TimeValidator]) TimeValidator {
 	return func(ctx context.Context, val time.Time) error {
 		if p(val) {
-			return chainer(f).Validate(ctx, val)
+			return l.Link(f).Validate(ctx, val)
 		}
 		return f.Validate(ctx, val)
 	}
