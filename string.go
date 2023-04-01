@@ -104,10 +104,5 @@ func (f StringValidator) InFold(options ...string) StringValidator {
 // validated using the new chain. If the predicate returns false, the original
 // chain is returned without modification, and the input value is not validated.
 func (f StringValidator) When(p Predicate[string], l Linker[string, StringValidator]) StringValidator {
-	return func(ctx context.Context, val string) error {
-		if p.OK(val) {
-			return l.Link(f).Validate(ctx, val)
-		}
-		return f.Validate(ctx, val)
-	}
+	return whenLinker(f, p, l)
 }

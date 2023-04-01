@@ -60,10 +60,5 @@ func (f TimeValidator) Max(max time.Time) TimeValidator {
 // validated using the new chain. If the predicate returns false, the original
 // chain is returned without modification, and the input value is not validated.
 func (f TimeValidator) When(p Predicate[time.Time], l Linker[time.Time, TimeValidator]) TimeValidator {
-	return func(ctx context.Context, val time.Time) error {
-		if p(val) {
-			return l.Link(f).Validate(ctx, val)
-		}
-		return f.Validate(ctx, val)
-	}
+	return whenLinker(f, p, l)
 }

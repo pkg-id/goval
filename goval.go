@@ -188,3 +188,12 @@ func (f Predicate[T]) OK(v T) bool { return f(v) }
 type Linker[T any, F FunctionValidatorConstraint[T]] func(f F) F
 
 func (f Linker[T, F]) Link(g F) F { return f(g) }
+
+func whenLinker[T any, F FunctionValidatorConstraint[T]](f F, p Predicate[T], l Linker[T, F]) F {
+	return func(ctx context.Context, val T) error {
+		if p.OK(val) {
+			return l.Link(f)(ctx, val)
+		}
+		return f(ctx, val)
+	}
+}
