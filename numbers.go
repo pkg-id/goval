@@ -70,3 +70,24 @@ func (f NumberValidator[T]) In(options ...T) NumberValidator[T] {
 		return nil
 	})
 }
+
+// When adds validation logic to the chain based on a condition.
+//
+// If the specified predicate returns true for an input value of type T, the
+// result of the chainer function is added to the chain, and the input value is
+// validated using the new chain. If the predicate returns false, the original
+// chain is returned without modification, and the input value is not validated.
+//
+// The chainer function takes a NumberValidator[T] instance as input and returns
+// a new NumberValidator[T] instance that includes additional validation logic.
+//
+// When returns a new NumberValidator[T] instance that can be used to validate
+// values of type T, with the added validation logic from the chainer function.
+func (f NumberValidator[T]) When(predicate func(value T) bool, chainer func(chain NumberValidator[T]) NumberValidator[T]) NumberValidator[T] {
+	return func(ctx context.Context, val T) error {
+		if predicate(val) {
+			return chainer(f).Validate(ctx, val)
+		}
+		return f.Validate(ctx, val)
+	}
+}

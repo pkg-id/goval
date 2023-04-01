@@ -208,6 +208,109 @@ func NumberValidatorInTestFunc[T goval.NumberConstraint, V []T](num T, ok V, fai
 	}
 }
 
+func TestNumberValidator_When(t *testing.T) {
+	isOdd := func(val int) bool { return val%2 == 1 }
+	isEven := func(val int) bool { return val%2 == 0 }
+
+	validator := goval.Number[int]().Required().Min(5).
+		When(isEven, func(chain goval.NumberValidator[int]) goval.NumberValidator[int] { return chain.Min(12).Max(16) }).
+		When(isOdd, func(chain goval.NumberValidator[int]) goval.NumberValidator[int] { return chain.Max(9) }).
+		In(7, 16)
+
+	t.Run("required", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 0)
+
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T, got type %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberRequired) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberRequired, exp.Code)
+		}
+	})
+
+	t.Run("min at parent", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 3)
+
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T, got type %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberMin) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMin, exp.Code)
+		}
+	})
+
+	t.Run("max when is odd", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 11)
+
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T, got type %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberMax) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMax, exp.Code)
+		}
+	})
+
+	t.Run("min when is even", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 10)
+
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T, got type %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberMin) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMin, exp.Code)
+		}
+	})
+
+	t.Run("max when is even", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 20)
+
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T, got type %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberMax) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberMax, exp.Code)
+		}
+	})
+
+	t.Run("in rules at parent", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 14)
+
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T, got type %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.NumberIn) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.NumberIn, exp.Code)
+		}
+	})
+
+	t.Run("valid", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, 7)
+		if err != nil {
+			t.Fatalf("expect no error but got an error: %v", err)
+		}
+	})
+
+}
+
 func BenchmarkNumberValidator_Required(b *testing.B) {
 	b.Run("when rules violated", func(b *testing.B) {
 		ctx := context.Background()
