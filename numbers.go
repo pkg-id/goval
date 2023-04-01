@@ -83,9 +83,9 @@ func (f NumberValidator[T]) In(options ...T) NumberValidator[T] {
 //
 // When returns a new NumberValidator[T] instance that can be used to validate
 // values of type T, with the added validation logic from the chainer function.
-func (f NumberValidator[T]) When(predicate func(value T) bool, chainer func(chain NumberValidator[T]) NumberValidator[T]) NumberValidator[T] {
+func (f NumberValidator[T]) When(p Predicate[T], chainer func(chain NumberValidator[T]) NumberValidator[T]) NumberValidator[T] {
 	return func(ctx context.Context, val T) error {
-		if predicate(val) {
+		if p.OK(val) {
 			return chainer(f).Validate(ctx, val)
 		}
 		return f.Validate(ctx, val)

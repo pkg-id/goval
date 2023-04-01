@@ -180,3 +180,7 @@ type Pattern interface {
 	// RegExp returns the compiled regular expression.
 	RegExp() *regexp.Regexp
 }
+
+type Predicate[T any] func(v T) bool
+
+func (f Predicate[T]) OK(v T) bool { return f(v) }
