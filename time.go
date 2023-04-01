@@ -52,3 +52,18 @@ func (f TimeValidator) Max(max time.Time) TimeValidator {
 		return nil
 	})
 }
+
+// When adds validation logic to the chain based on a condition.
+//
+// If the specified predicate returns true for an input value of type time.Time, the
+// result of the chainer function is added to the chain, and the input value is
+// validated using the new chain. If the predicate returns false, the original
+// chain is returned without modification, and the input value is not validated.
+func (f TimeValidator) When(predicate func(value time.Time) bool, chainer func(chain TimeValidator) TimeValidator) TimeValidator {
+	return func(ctx context.Context, val time.Time) error {
+		if predicate(val) {
+			return chainer(f).Validate(ctx, val)
+		}
+		return f.Validate(ctx, val)
+	}
+}
