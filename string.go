@@ -96,3 +96,18 @@ func (f StringValidator) InFold(options ...string) StringValidator {
 		return nil
 	})
 }
+
+// When adds validation logic to the chain based on a condition.
+//
+// If the specified predicate returns true for an input value of type string, the
+// result of the chainer function is added to the chain, and the input value is
+// validated using the new chain. If the predicate returns false, the original
+// chain is returned without modification, and the input value is not validated.
+func (f StringValidator) When(predicate func(value string) bool, chainer func(chain StringValidator) StringValidator) StringValidator {
+	return func(ctx context.Context, val string) error {
+		if predicate(val) {
+			return chainer(f).Validate(ctx, val)
+		}
+		return f.Validate(ctx, val)
+	}
+}
