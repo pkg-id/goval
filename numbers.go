@@ -71,18 +71,13 @@ func (f NumberValidator[T]) In(options ...T) NumberValidator[T] {
 	})
 }
 
-// When adds validation logic to the chain based on a condition.
+// When adds validation logic to the chain based on a condition for numeric values of type T.
 //
-// If the specified predicate returns true for an input value of type T, the
-// result of the chainer function is added to the chain, and the input value is
-// validated using the new chain. If the predicate returns false, the original
-// chain is returned without modification, and the input value is not validated.
+// If the predicate returns true, the result of the mapper function is added to the chain,
+// and the input value is validated using the new chain. Otherwise, the original chain is returned unmodified.
 //
-// The chainer function takes a NumberValidator[T] instance as input and returns
-// a new NumberValidator[T] instance that includes additional validation logic.
-//
-// When returns a new NumberValidator[T] instance that can be used to validate
-// values of type T, with the added validation logic from the chainer function.
-func (f NumberValidator[T]) When(p Predicate[T], l Linker[T, NumberValidator[T]]) NumberValidator[T] {
-	return whenLinker(f, p, l)
+// The mapper function takes a NumberValidator[T] instance and returns a new NumberValidator[T] instance with
+// additional validation logic.
+func (f NumberValidator[T]) When(p Predicate[T], m Mapper[T, NumberValidator[T]]) NumberValidator[T] {
+	return whenLinker(f, p, m)
 }

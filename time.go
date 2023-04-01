@@ -53,12 +53,13 @@ func (f TimeValidator) Max(max time.Time) TimeValidator {
 	})
 }
 
-// When adds validation logic to the chain based on a condition.
+// When adds validation logic to the chain based on a condition for time.Time values.
 //
-// If the specified predicate returns true for an input value of type time.Time, the
-// result of the chainer function is added to the chain, and the input value is
-// validated using the new chain. If the predicate returns false, the original
-// chain is returned without modification, and the input value is not validated.
-func (f TimeValidator) When(p Predicate[time.Time], l Linker[time.Time, TimeValidator]) TimeValidator {
-	return whenLinker(f, p, l)
+// If the predicate returns true, the result of the mapper function is added to the chain,
+// and the input value is validated using the new chain. Otherwise, the original chain is returned unmodified.
+//
+// The mapper function takes a TimeValidator instance and returns a new TimeValidator instance with
+// additional validation logic.
+func (f TimeValidator) When(p Predicate[time.Time], m Mapper[time.Time, TimeValidator]) TimeValidator {
+	return whenLinker(f, p, m)
 }

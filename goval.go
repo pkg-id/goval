@@ -181,18 +181,25 @@ type Pattern interface {
 	RegExp() *regexp.Regexp
 }
 
+// Predicate is a function type that evaluates a value and returns true if the value meets certain criteria.
 type Predicate[T any] func(v T) bool
 
+// OK is syntactic sugar for calling Predicate.
 func (f Predicate[T]) OK(v T) bool { return f(v) }
 
-type Linker[T any, F FunctionValidatorConstraint[T]] func(f F) F
+// Mapper is a function type that maps a FunctionValidator F to another FunctionValidator.
+type Mapper[T any, F FunctionValidatorConstraint[T]] func(f F) F
 
-func (f Linker[T, F]) Link(g F) F { return f(g) }
+// Map is a syntactic for calling Mapper.
+func (f Mapper[T, F]) Map(g F) F { return f(g) }
 
-func whenLinker[T any, F FunctionValidatorConstraint[T]](f F, p Predicate[T], l Linker[T, F]) F {
+// whenLinker links an existing FunctionValidator chain conditionally. If the predicate P is OK, then
+// the existing chain will be mapped into a new FunctionValidator. Otherwise, the existing chain will
+// be used to validate the input.
+func whenLinker[T any, F FunctionValidatorConstraint[T]](f F, p Predicate[T], m Mapper[T, F]) F {
 	return func(ctx context.Context, val T) error {
 		if p.OK(val) {
-			return l.Link(f)(ctx, val)
+			return m.Map(f)(ctx, val)
 		}
 		return f(ctx, val)
 	}
