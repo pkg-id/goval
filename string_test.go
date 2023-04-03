@@ -168,6 +168,77 @@ func TestStringValidator_InFold(t *testing.T) {
 	}
 }
 
+func TestStringValidator_When(t *testing.T) {
+	isProbablyEmail := func(s string) bool { return strings.ContainsRune(s, '@') }
+	isProbablyPhone := func(s string) bool { return strings.HasPrefix(s, "+") }
+
+	validator := goval.String().
+		Required().
+		When(isProbablyEmail, func(chain goval.StringValidator) goval.StringValidator { return chain.Match(govalregex.Email) }).
+		When(isProbablyPhone, func(chain goval.StringValidator) goval.StringValidator { return chain.Match(govalregex.E164) }).
+		InFold("+62", "bob@mail.com")
+
+	t.Run("required", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, "")
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.StringRequired) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.StringRequired, exp.Code)
+		}
+	})
+
+	t.Run("fails on when it is probably phone", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, "++")
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.StringMatch) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.StringMatch, exp.Code)
+		}
+	})
+
+	t.Run("fails on when it is probably email", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, "a@b")
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.StringMatch) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.StringMatch, exp.Code)
+		}
+	})
+
+	t.Run("fails on when it is not in options", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, "bob@example.com")
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.StringInFold) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.StringInFold, exp.Code)
+		}
+	})
+
+	t.Run("valid", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, "bob@mail.com")
+		if err != nil {
+			t.Fatalf("expect no error but got an error: %v", err)
+		}
+	})
+}
+
 func BenchmarkStringValidator_Required(b *testing.B) {
 	ctx := context.Background()
 

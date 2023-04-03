@@ -96,3 +96,14 @@ func (f StringValidator) InFold(options ...string) StringValidator {
 		return nil
 	})
 }
+
+// When adds validation logic to the chain based on a condition for string values.
+//
+// If the predicate returns true, the result of the mapper function is added to the chain,
+// and the input value is validated using the new chain. Otherwise, the original chain is returned unmodified.
+//
+// The mapper function takes a StringValidator instance and returns a new StringValidator instance with
+// additional validation logic.
+func (f StringValidator) When(p Predicate[string], m Mapper[string, StringValidator]) StringValidator {
+	return whenLinker(f, p, m)
+}

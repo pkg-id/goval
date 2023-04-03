@@ -90,3 +90,83 @@ func TestTimeValidator_Max(t *testing.T) {
 		t.Errorf("expect the error args: %v; got error args: %v", args, exp.Args)
 	}
 }
+
+func TestTimeValidator_When(t *testing.T) {
+	jkt, err := time.LoadLocation("Asia/Jakarta")
+	if err != nil {
+		t.Fatalf("expect load ok, but got an error: %v", err)
+	}
+
+	isUTC := func(v time.Time) bool { return v.Location() == time.UTC }
+	isJakarta := func(v time.Time) bool { return v.Location() == jkt }
+
+	now := time.Now().In(time.UTC)
+
+	validator := goval.Time().
+		Required().
+		When(isUTC, func(chain goval.TimeValidator) goval.TimeValidator { return chain.Min(now) }).
+		When(isJakarta, func(chain goval.TimeValidator) goval.TimeValidator {
+			return chain.Min(now.Add(7 * time.Hour).In(jkt))
+		}).
+		Max(now.Add(24 * time.Hour))
+
+	t.Run("required", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, time.Time{})
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.TimeRequired) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.TimeRequired, exp.Code)
+		}
+	})
+
+	t.Run("min when UTC", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, now.Add(-1*time.Hour))
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.TimeMin) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMin, exp.Code)
+		}
+	})
+
+	t.Run("min when Asia/Jakarta", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, now.In(jkt))
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.TimeMin) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMin, exp.Code)
+		}
+	})
+
+	t.Run("fails on max", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, now.In(jkt).Add(56*time.Hour))
+		var exp *goval.RuleError
+		if !errors.As(err, &exp) {
+			t.Fatalf("expect error type: %T; got error type: %T", exp, err)
+		}
+
+		if !exp.Code.Equal(goval.TimeMax) {
+			t.Errorf("expect the error code: %v; got error code: %v", goval.TimeMax, exp.Code)
+		}
+	})
+
+	t.Run("valid", func(t *testing.T) {
+		ctx := context.Background()
+		err := validator.Validate(ctx, now.In(jkt).Add(8*time.Hour))
+		if err != nil {
+			t.Fatalf("expect no error, but got an error: %v", err)
+		}
+	})
+}
