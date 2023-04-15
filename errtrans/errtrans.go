@@ -124,7 +124,6 @@ var bufferPool = sync.Pool{
 		return new(bytes.Buffer)
 	},
 }
-var tplCache = sync.Map{}
 
 func NewTranslator(opts ...Option) goval.ErrorTranslator {
 	t := Translator{
@@ -140,20 +139,16 @@ func NewTranslator(opts ...Option) goval.ErrorTranslator {
 }
 
 func (t *Translator) translate(ctx context.Context, ruleErr *goval.RuleError, key string) error {
-	var (
-		err    error
-		ok     bool
-		tplTmp any
-	)
-
+	var err error
 	if len(t.bundle) == 0 {
 		return ErrBundleIsNoSet
 	}
 
 	lang := LanguageFromContext(ctx, "en")
 
-	tplTmp, ok = tplCache.Load(lang + key)
-	if !ok {
+	tplName := lang + "." + key
+	tpl := t.tpl.Lookup(tplName)
+	if tpl == nil {
 		dict, ok := t.bundle[lang]
 		if !ok {
 			return ErrLanguageDictionaryIsNotFound
@@ -164,15 +159,11 @@ func (t *Translator) translate(ctx context.Context, ruleErr *goval.RuleError, ke
 			return ErrLanguageKeyIsNotFound
 		}
 
-		tplTmp, err = t.tpl.Parse(textTemplate)
+		tpl, err = t.tpl.New(tplName).Parse(textTemplate)
 		if err != nil {
 			return goval.TextError(err.Error())
 		}
-
-		tplCache.Store(lang+key, tplTmp)
 	}
-
-	tpl := tplTmp.(*template.Template)
 
 	buff := bufferPool.Get().(*bytes.Buffer)
 	defer func() {
