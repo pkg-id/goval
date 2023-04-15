@@ -6,26 +6,9 @@
 
 **Goval** or **Go Validator** is a package for value validation in Go.
 
-The objective of this package is to provide a simple and easy-to-use validation library for Go that is easy to integrate
-into existing projects, and easy for developers to use.
-The package should be easy to extend and should provide a simple way to add custom validators, with no magic happening
-behind the scenes to make it easy to understand and debug as well.
-
-This package is designed to enhance the capabilities of the Go function as a first-class citizen. That means everything
-in this package is built using function composition. Each validation rule is a simple function that can be chained (
-composed) together to create complex validation logic. This package is also designed to avoid using reflection as much
-as possible and is safe for concurrent use.
-
-## How to Contribute?
-
-The package is still under development and requires more validation rules to be implemented. If you would like to
-contribute to this project, your contributions would be greatly appreciated. To contribute, simply fork the project and
-send us a pull request. Although there is no formal format for contributing at the moment, we would appreciate it if you
-could provide a good explanation with your pull request.
-
-When you clone this repository, please make sure to run `make setup` to install the required dependencies for development
-and also to set up the `pre-commit` hooks. Additionally, when you create a commit, the `pre-commit` hooks will check if the
-commit follows our standard. We use Conventional Commits.
+This Go packages aims to provide a user-friendly validation library that is easy to integrate, extend, and use. 
+It utilizes function composition for building complex validation logic and avoids reflection for improved performance. 
+It is designed to enhance the capabilities of Go functions and is safe for concurrent use.
 
 ## Features
 
@@ -36,6 +19,11 @@ commit follows our standard. We use Conventional Commits.
 * [No Reflection](#no-reflection)
 * [Support for Customizable and Translatable Error Messages](#support-for-customizable-and-translatable-error-messages)
 
+## Installation
+
+```shell
+go get github.com/pkg-id/goval
+```
 
 ## Feature Details
 
@@ -62,6 +50,7 @@ This means that if you already have common validation rules, you can create a ne
 validator := goval.String().Required().Min(2).Max(9)
 extendedValidator := validator.Match(govalregex.AlphaNumeric)
 
+ctx := context.Background()
 fmt.Println(validator.Validate(ctx, "hello!"))          // err: <nil>
 fmt.Println(extendedValidator.Validate(ctx, "hello!"))  // err: {"code":2003,"args":["^[a-zA-Z0-9]+$"]}
 ```
@@ -315,7 +304,7 @@ Just execute again, and this will be the final error, with the key and a human-r
 ]
 ```
 
-### No Reflection
+### Zero Reflection
 This package utilizes a new feature in Go called "Generic" to eliminate the need for the `reflect` package.
 
 ### Support for Customizable and Translatable Error Messages
@@ -334,6 +323,16 @@ err := goval.Execute(ctx,
     goval.Named[[]SocialMedia]("social_media_list", req.SocialMediaList, goval.Slice[SocialMedia]().Required().EachFunc(SocialMediaValidator)),
 )
 ```
+
+## How to Contribute?
+
+If you would like to contribute to this project, your contributions would be greatly appreciated. To contribute, 
+simply fork the project and send us a pull request. Although there is no formal format for contributing at the moment, 
+we would appreciate it if you could provide a good explanation with your pull request.
+
+When you clone this repository, please make sure to run `make setup` to install the required dependencies for development
+and also to set up the `pre-commit` hooks. Additionally, when you create a commit, the `pre-commit` hooks will check if the
+commit follows our standard. We use Conventional Commits.
 
 ## License
 
