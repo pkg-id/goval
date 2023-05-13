@@ -34,6 +34,39 @@ func TestNamed(t *testing.T) {
 			t.Fatalf("expect not error")
 		}
 	})
+
+	t.Run("internal error", func(t *testing.T) {
+		ctx := context.Background()
+
+		retErr := errors.New("internal error")
+		custom := func(ctx context.Context, value string) error {
+			return goval.NewInternalError(retErr)
+		}
+
+		err := goval.Named("field-name", "a", goval.String().With(custom)).Validate(ctx)
+		if !errors.Is(err, retErr) {
+			t.Fatalf("expect error is internal error")
+		}
+	})
+
+	t.Run("without internal error", func(t *testing.T) {
+		ctx := context.Background()
+
+		retErr := errors.New("internal error")
+		custom := func(ctx context.Context, value string) error {
+			return retErr
+		}
+
+		err := goval.Named("field-name", "a", goval.String().With(custom)).Validate(ctx)
+		var kErr *goval.KeyError
+		if !errors.As(err, &kErr) {
+			t.Fatalf("expect error type: %T; got error type: %T", kErr, err)
+		}
+
+		if !errors.Is(kErr.Err, retErr) {
+			t.Fatalf("expect error is internal error")
+		}
+	})
 }
 
 func TestEach(t *testing.T) {

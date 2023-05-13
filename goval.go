@@ -2,6 +2,7 @@ package goval
 
 import (
 	"context"
+	"errors"
 	"github.com/pkg-id/goval/funcs"
 	"regexp"
 )
@@ -107,6 +108,10 @@ func execChain[T any, Func FunctionValidatorConstraint[T]](ctx context.Context, 
 func Named[T any, F RuleValidator[T]](name string, value T, validator F) Validator {
 	return ValidatorFunc(func(ctx context.Context) error {
 		if err := validator.Validate(ctx, value); err != nil {
+			var ie *InternalError
+			if errors.As(err, &ie) {
+				return ie
+			}
 			return NewKeyError(name, err)
 		}
 		return nil
@@ -160,7 +165,7 @@ func validatorReducer(ctx context.Context, internalError chan error) func(errs E
 		err := validator.Validate(ctx)
 		if err != nil {
 			switch err.(type) {
-			default:
+			default: // *InternalError or something else.
 				internalError <- err
 			case *RuleError, *KeyError, Errors:
 				errs = append(errs, err)

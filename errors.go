@@ -134,3 +134,18 @@ func stringifyJSON(m json.Marshaler) string {
 	}
 	return string(b)
 }
+
+// InternalError is an error wrapper to indicate an internal error.
+// If goval got this type of error, it will not include in Errors and KeyError.
+type InternalError struct {
+	Err error
+}
+
+// NewInternalError creates a new InternalError.
+func NewInternalError(err error) *InternalError {
+	return &InternalError{Err: err}
+}
+
+func (e *InternalError) Error() string  { return e.String() }
+func (e *InternalError) Unwrap() error  { return e.Err }
+func (e *InternalError) String() string { return "goval.InternalError: " + e.Err.Error() }
