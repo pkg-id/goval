@@ -10,7 +10,7 @@ import (
 
 // StringValidator is a FunctionValidator that validates string.
 // For backward compatibility.
-type StringValidator = StringVariantValidator[string]
+type StringValidator = SVV[string]
 
 // String returns a StringValidator with no rules.
 // For backward compatibility.
@@ -18,26 +18,27 @@ func String() StringValidator {
 	return StringVariant[string]()
 }
 
-// StringVariantValidator is a FunctionValidator that validates string variants.
-type StringVariantValidator[T ~string] FunctionValidator[T]
+// SVV (String Variant Validator) is a FunctionValidator that validates string
+// variants.
+type SVV[T ~string] FunctionValidator[T]
 
-// StringVariant returns a StringVariantValidator with no rules.
-func StringVariant[T ~string]() StringVariantValidator[T] {
+// StringVariant returns a SVV with no rules.
+func StringVariant[T ~string]() SVV[T] {
 	return NopFunctionValidator[T]
 }
 
 // Validate executes the validation rules immediately.
-func (f StringVariantValidator[T]) Validate(ctx context.Context, value T) error {
+func (f SVV[T]) Validate(ctx context.Context, value T) error {
 	return validatorOf(f, value).Validate(ctx)
 }
 
 // With attaches the next rule to the chain.
-func (f StringVariantValidator[T]) With(next StringVariantValidator[T]) StringVariantValidator[T] {
+func (f SVV[T]) With(next SVV[T]) SVV[T] {
 	return Chain(f, next)
 }
 
 // Required ensures the string is not empty.
-func (f StringVariantValidator[T]) Required() StringVariantValidator[T] {
+func (f SVV[T]) Required() SVV[T] {
 	return f.With(func(ctx context.Context, value T) error {
 		if value == "" {
 			return NewRuleError(StringRequired)
@@ -47,7 +48,7 @@ func (f StringVariantValidator[T]) Required() StringVariantValidator[T] {
 }
 
 // Min ensures the length of the string is not less than the given length.
-func (f StringVariantValidator[T]) Min(length int) StringVariantValidator[T] {
+func (f SVV[T]) Min(length int) SVV[T] {
 	return f.With(func(ctx context.Context, value T) error {
 		if len(value) < length {
 			return NewRuleError(StringMin, length)
@@ -57,7 +58,7 @@ func (f StringVariantValidator[T]) Min(length int) StringVariantValidator[T] {
 }
 
 // Max ensures the length of the string is not greater than the given length.
-func (f StringVariantValidator[T]) Max(length int) StringVariantValidator[T] {
+func (f SVV[T]) Max(length int) SVV[T] {
 	return f.With(func(ctx context.Context, value T) error {
 		if len(value) > length {
 			return NewRuleError(StringMax, length)
@@ -68,7 +69,7 @@ func (f StringVariantValidator[T]) Max(length int) StringVariantValidator[T] {
 
 // Match ensures the string matches the given pattern.
 // If pattern cause panic, will be recovered.
-func (f StringVariantValidator[T]) Match(pattern Pattern) StringVariantValidator[T] {
+func (f SVV[T]) Match(pattern Pattern) SVV[T] {
 	return f.With(func(ctx context.Context, value T) (err error) {
 		defer func() {
 			if rec := recover(); rec != nil {
@@ -87,7 +88,7 @@ func (f StringVariantValidator[T]) Match(pattern Pattern) StringVariantValidator
 
 // In ensures that the provided string is one of the specified options.
 // This validation is case-sensitive, use InFold to perform a case-insensitive In validation.
-func (f StringVariantValidator[T]) In(options ...T) StringVariantValidator[T] {
+func (f SVV[T]) In(options ...T) SVV[T] {
 	return f.With(func(ctx context.Context, value T) error {
 		ok := funcs.Contains(options, func(opt T) bool { return value == opt })
 		if !ok {
@@ -98,7 +99,7 @@ func (f StringVariantValidator[T]) In(options ...T) StringVariantValidator[T] {
 }
 
 // InFold ensures that the provided string is one of the specified options with case-insensitivity.
-func (f StringVariantValidator[T]) InFold(options ...T) StringVariantValidator[T] {
+func (f SVV[T]) InFold(options ...T) SVV[T] {
 	return f.With(func(ctx context.Context, value T) error {
 		ok := funcs.Contains(options, func(opt T) bool { return strings.EqualFold(string(value), string(opt)) })
 		if !ok {
@@ -115,6 +116,6 @@ func (f StringVariantValidator[T]) InFold(options ...T) StringVariantValidator[T
 //
 // The mapper function takes a StringValidator instance and returns a new StringValidator instance with
 // additional validation logic.
-func (f StringVariantValidator[T]) When(p Predicate[T], m Mapper[T, StringVariantValidator[T]]) StringVariantValidator[T] {
+func (f SVV[T]) When(p Predicate[T], m Mapper[T, SVV[T]]) SVV[T] {
 	return whenLinker(f, p, m)
 }
