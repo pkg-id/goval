@@ -2,9 +2,10 @@ package errtrans
 
 import (
 	"context"
-	"github.com/pkg-id/goval"
 	"strings"
 	"testing"
+
+	"github.com/pkg-id/goval"
 )
 
 type ruleCode bool
@@ -12,6 +13,8 @@ type ruleCode bool
 func (r ruleCode) Equal(_ goval.RuleCoder) bool {
 	return bool(r)
 }
+
+func (r ruleCode) String() string { return "ruleCode" }
 
 func TestTranslator_Translate(t *testing.T) {
 	ctx := context.Background()
