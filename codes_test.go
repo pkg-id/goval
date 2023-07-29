@@ -11,12 +11,16 @@ func (c customTypeButSameBase) Equal(other RuleCoder) bool {
 	return ok && v == c
 }
 
+func (c customTypeButSameBase) String() string { return ruleCode(c).String() }
+
 type customTypeButSameRootBase int
 
 func (c customTypeButSameRootBase) Equal(other RuleCoder) bool {
 	v, ok := other.(customTypeButSameRootBase)
 	return ok && v == c
 }
+
+func (c customTypeButSameRootBase) String() string { return ruleCode(c).String() }
 
 func TestRuleCode_Equal(t *testing.T) {
 	tests := []struct {

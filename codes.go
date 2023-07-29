@@ -1,5 +1,7 @@
 package goval
 
+import "fmt"
+
 type ruleCode int
 
 func (r ruleCode) Equal(other RuleCoder) bool {
@@ -7,8 +9,11 @@ func (r ruleCode) Equal(other RuleCoder) bool {
 	return ok && r == v
 }
 
+func (r ruleCode) String() string { return fmt.Sprintf("%d", r) }
+
 type RuleCoder interface {
 	Equal(other RuleCoder) bool
+	fmt.Stringer
 }
 
 const (
