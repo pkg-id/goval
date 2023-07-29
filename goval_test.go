@@ -139,7 +139,7 @@ func TestExecute(t *testing.T) {
 			goval.Bind[int](8, goval.Number[int]().Required().With(customValidator)),
 		)
 
-		if err != internalError {
+		if !errors.Is(err, internalError) {
 			t.Fatalf("expect validation error is discarded and internal error is returned; but got %v", err)
 		}
 	})
