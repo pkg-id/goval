@@ -3,8 +3,9 @@ package goval
 import (
 	"context"
 	"errors"
-	"github.com/pkg-id/goval/funcs"
 	"regexp"
+
+	"github.com/pkg-id/goval/funcs"
 )
 
 // Validator is an interface for all validators. It provides a contract for grouping different kinds of validators.
@@ -167,7 +168,7 @@ func validatorReducer(ctx context.Context, internalError chan error) func(errs E
 			switch err.(type) {
 			default: // *InternalError or something else.
 				internalError <- err
-			case *RuleError, *KeyError, Errors:
+			case *RuleError, *KeyError, Errors, TextError:
 				errs = append(errs, err)
 			}
 		}
