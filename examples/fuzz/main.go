@@ -38,9 +38,9 @@ func test_rgb() {
 func test_numeric() {
 	fmt.Println("\n\ntest_numeric()")
 
-	zero := "0"     // result : invalid
+	zero := "0"     // result : valid
 	minZero := "-0" // result : valid
-	validator := goval.String().Required().Min(2).Match(govalregex.Numeric)
+	validator := goval.String().Required().Match(govalregex.Numeric)
 	ctx := context.Background()
 	for _, v := range []string{zero, minZero} {
 		validateErr := validator.Validate(ctx, v)
